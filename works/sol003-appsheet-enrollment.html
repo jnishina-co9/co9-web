@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>AppSheet制作事例 #03『ペーパーレス入会申込＋電子署名アプリ』 | 深森呼吸</title>
+  <meta name="description" content="Google AppSheetで開発したペーパーレス入会申込＋電子署名アプリの紹介と仕様。タブレット1台で会員登録から契約書PDFの自動送信までをシームレスに完結。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&family=Outfit:wght@400;600;700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* ============================================================
+       SOLUTIONテンプレ(仕様書兼作品紹介・スライド型)
+       - 背景は白で統一
+       - このテンプレは直角基調(角丸はBACKピルとデモ動画ブラウザ枠のみ)
+       ============================================================ */
+
+    body {
+      line-height: 1.8;
+    }
+
+    .en {
+      font-family: var(--font-accent);
+      letter-spacing: 0.12em;
+    }
+
+    /* section.slab / .hero / .inner の幅・paddingはwork.cssで共通定義 */
+
+    .slab--white { background: var(--color-white); }
+
+    /* セクション見出し共通(アクセントラベル+大見出し)
+       ※CTAボタン内の .label(work.css)と衝突しないよう .sec-label にする */
+    .sec-label {
+      font-family: var(--font-accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-black);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+    .slab h2 {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 40px;
+    }
+
+    /* Quick Summary内の副見出し(Specification等、独立セクションほどの重みは持たせない) */
+    .sub-heading {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin: 0 0 20px;
+    }
+
+    /* ===== HERO(タイトルカード → リード文 → デモ動画) ===== */
+    .hero p.lead {
+      font-size: 17px;
+      margin: 0 0 64px;
+    }
+
+    /* ===== Quick Summary(Project/Date/Tool/URLのベントーカード) ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 96px; /* スラブ内の次見出しとの境界もスラブ間と同じ96pxに揃える */
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .url-line {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .url-line a {
+      font-family: var(--font-accent);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 4px;
+    }
+
+    .url-line a:hover {
+      text-decoration: none;
+    }
+
+    /* ===== Concept(コンセプトコピー+4セルグリッド) ===== */
+    .concept-copy {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.9;
+      margin: 0 0 40px;
+    }
+    .black { color: var(--color-black); }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2行2列で固定(バランス優先) */
+      border-top: 1px solid var(--color-charcoal);
+      border-left: 1px solid var(--color-charcoal);
+    }
+    .grid4 .cell {
+      border-right: 1px solid var(--color-charcoal);
+      border-bottom: 1px solid var(--color-charcoal);
+      padding: 32px 26px;
+    }
+    .grid4 .num {
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 30px;
+      color: var(--color-black);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .grid4 h3 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+    .grid4 p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Features(番号付き見出し+説明) ===== */
+    .feat {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+    }
+    .feat h3 {
+      font-size: 18px;
+      font-weight: 700;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--color-charcoal);
+      margin: 0 0 16px;
+    }
+    .feat h3 .fnum {
+      font-family: var(--font-accent);
+      color: var(--color-black);
+      font-weight: 800;
+      margin-right: 10px;
+    }
+    .feat p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Flow(縦ライン+単一列。マーカーはホバーで四角→ひし形に回転) ===== */
+    .steps {
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .steps::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 68px;
+      width: 1px;
+      background: var(--divider-strong);
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 24px 1fr;
+      align-items: start;
+      padding-bottom: 48px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step .step-num {
+      grid-column: 1;
+      font-family: var(--font-accent);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--color-black);
+      padding-top: 2px;
+    }
+    .step .step-marker {
+      position: absolute;
+      top: 9px;
+      left: 63px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-charcoal);
+      transform: rotate(0deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+    }
+    .step:hover .step-marker {
+      transform: rotate(45deg) scale(1.8);
+      background: var(--color-black);
+    }
+    .step .step-content {
+      grid-column: 3;
+      padding-left: 4px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .step:hover .step-content {
+      transform: translate(10px, -6px);
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+    .step p { font-size: 15.5px; margin: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .step-marker, .step-content { transition: none; }
+    }
+
+    /* ===== UI/UX(縦線リスト) ===== */
+    .why {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    .why > div { border-left: 4px solid var(--color-black); padding-left: 22px; }
+    .why h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+    .why p { font-size: 15.5px; margin: 0; }
+
+    /* ===== 基本情報テーブル(概要セクションに統合) ===== */
+    table.spec {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-white);
+    }
+    table.spec th, table.spec td {
+      border: 1px solid var(--color-charcoal);
+      padding: 15px 20px;
+      font-size: 15.5px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.spec th {
+      background: var(--color-bg);
+      font-weight: 700;
+      width: 26%;
+      white-space: nowrap;
+    }
+    /* 技術スタック(役割:ツール名の一覧) */
+    .tech-stack {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .tech-stack li { font-size: 15.5px; }
+    .tech-stack strong {
+      color: var(--color-black);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    /* ===== おわりに+リンク ===== */
+    .slab .link-list { max-width: 460px; }
+    /* このテンプレのCTAボタンは直角 */
+    .slab .cta { border-radius: 0; }
+
+    /* ===== デモ動画(ウェブサイト型と同デザイン・同幅で統一) =====
+       ※このテンプレは直角基調だが、ブラウザ枠だけは
+         ウェブサイト型ページ(web008-line-tools.html)と同じ角丸+影+全幅で統一 */
+    .mock-pc {
+      margin: 0; /* figureのUAマージン打ち消し(次スラブとの96pxはheroのpaddingが担う) */
+      width: 100%;
+      background: var(--color-white);
+      border-radius: 20px; /* サイト直角化後もブラウザ枠のみ角丸を維持 */
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(26, 26, 26, 0.10), 0 10px 28px rgba(26, 26, 26, 0.14);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--color-bg);
+    }
+
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+
+    .mock-dot:nth-child(1) { background: var(--color-black); }
+    .mock-dot:nth-child(2) { background: var(--color-charcoal); }
+
+    .mock-url {
+      margin-left: 8px;
+      background: var(--color-bg);
+      color: var(--color-charcoal);
+      font-family: var(--font-accent);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      padding: 3px 14px;
+      line-height: 1.6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-pc video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== レスポンシブ(自動段組み+560px調整 ※work.cssと統一) ===== */
+    @media (max-width: 560px) {
+      .grid4 { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; margin-bottom: 48px; }
+      .url-line a { font-size: 13.5px; }
+      .mock-bar { padding: 9px 12px; }
+      table.spec th, table.spec td { display: block; width: 100%; border-top: none; }
+      table.spec tr:first-child th { border-top: 1px solid var(--color-charcoal); }
+      .hero p.lead { font-size: 15px; }
+      .step .step-num { font-size: 26px; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="inner">
+        <div class="title-card">
+          <p class="eyebrow">Solution</p>
+          <h1>AppSheet制作事例 #03『ペーパーレス入会申込＋電子署名アプリ』</h1>
+        </div>
+
+        <p class="lead">タブレット1台で、会員登録・規約同意・電子署名・契約書PDFの自動送信までをシームレスに完結させる、免責同意書付きの入会申込みアプリをAppSheetで作成しました。紙の申込書を使うあらゆる対面受付業務に応用できます。</p>
+
+        <figure class="mock-pc" aria-label="アプリの操作デモ動画">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-url">入会申込＋電子署名アプリ(Google AppSheet)</span>
+          </div>
+          <video src="../img/works/sol003/demo.mp4" width="1920" height="1080" autoplay muted loop playsinline controls preload="metadata"></video>
+        </figure>
+      </div>
+    </section>
+
+    <!-- QUICK SUMMARY -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Quick Summary</div>
+        <h2>概要</h2>
+        <div class="about-grid">
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">AppSheet制作事例 #03『ペーパーレス入会申込＋電子署名アプリ』</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2026年2月</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Google AppSheet</p>
+          </div>
+          <div class="about-card about-card--wide">
+            <p class="about-label">URL</p>
+            <p class="url-line">非公開(AppSheetの仕様上、組織内限定公開のため)</p>
+          </div>
+        </div>
+
+        <div class="sec-label en">Specification</div>
+        <h3 class="sub-heading">仕様</h3>
+        <table class="spec">
+          <tbody>
+            <tr>
+              <th>技術スタック</th>
+              <td>
+                <ul class="tech-stack">
+                  <li><strong>プラットフォーム</strong>Google AppSheet</li>
+                  <li><strong>データベース</strong>Googleスプレッドシート</li>
+                  <li><strong>認証</strong>Googleアカウントのログイン情報</li>
+                  <li><strong>連携先</strong>Googleドキュメント(契約書テンプレート)・Googleドライブ(ファイル保存)・Gmail(自動送信)</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th>動作環境</th>
+              <td>タブレット端末での利用を想定(店舗の対面受付用)。AppSheet自体はスマホ・PCでも動作するが、本アプリは顔写真撮影・署名入力の操作性から、タブレットでの運用を前提に設計</td>
+            </tr>
+            <tr>
+              <th>制約・スコープ外</th>
+              <td>多言語対応は未実装/決済機能は含まれない</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONCEPT -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Concept</div>
+        <h2>タブレット1台にサインするだけで、契約書の作成から送付までが終わる、対面受付の自動化窓口</h2>
+        <p class="concept-copy">スポーツジムやヨガスタジオ、エステなどの会員制サービス、レンタカーや衣装貸出の契約受付、塾・習い事の入会手続き、不動産の内見や有料イベントの免責同意まで、<span class="black">紙の申込書と押印(またはサイン)を伴うあらゆる対面業務</span>に応用できる、ペーパーレス受付の仕組みです。</p>
+        <div class="grid4">
+          <div class="cell">
+            <span class="num en">01</span>
+            <h3>転記作業ゼロ</h3>
+            <p>タブレットへの入力内容がそのまま契約書PDFに反映されるため、手作業での転記や、それに伴う入力ミスが発生しません。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">02</span>
+            <h3>待ち時間の大幅短縮</h3>
+            <p>送信と同時に契約書が自動作成されるため、スタッフの事務作業を挟まずその場で受付が完了します。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">03</span>
+            <h3>コンプライアンス強化</h3>
+            <p>権限管理と個人情報の自動マスク処理により、担当者以外は入会者の個人情報を閲覧できない設計です。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">04</span>
+            <h3>幅広い業種への応用</h3>
+            <p>会員制サービスから契約業務、免責同意受付まで、紙の申込書を使うあらゆる対面受付シーンに転用できます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">Features</div>
+        <h2>主な機能</h2>
+        <div class="feat">
+          <div>
+            <h3><span class="fnum en">1</span>お客様情報の入力</h3>
+            <p>氏名・住所・利用プランなどをタブレットの画面上で直接入力。生年月日を入力するだけで年齢を自動計算する仕組みも組み込んでいます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">2</span>利用規約の確認と同意チェック</h3>
+            <p>長文になりがちな利用規約も、見出しでページを分割して読みやすく表示。同意にチェックを入れないと次のステップに進めない設計です。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">3</span>顔写真撮影・手書き署名の取得</h3>
+            <p>タブレットのカメラで顔写真を撮影し、画面に指でなぞってサインするだけで電子署名を取得(AppSheetのSignature型を活用)。書類への手書き・押印が不要になります。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">4</span>契約書PDFの自動生成</h3>
+            <p>送信された情報は、Googleドキュメントのテンプレートに自動で流し込まれ、契約書PDFとして即座に生成されます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">5</span>顧客別フォルダへの自動整理・自動送信</h3>
+            <p>生成したPDFは「ID＋氏名様」で自動命名された専用フォルダにGoogleドライブ上で保存され、お客様・店舗の両方へメールで自動送信。ファイル名も「ID_yyyymmdd_申込書_氏名様」の規則で統一され、後から探しやすい状態を保ちます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">6</span>セキュリティ設定による情報保護</h3>
+            <p>Security Filter設定で、閲覧できるデータの範囲をアカウントごとに制御。PII(個人情報)設定により、監査ログに残る個人情報も自動でマスク処理され、情報漏洩のリスクを抑えています。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Flow</div>
+        <h2>受付から契約書送付までは6ステップ</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num en">01</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>タブレットで新規登録画面を開く</h3>
+              <p>お客様ご自身の操作で、受付スタッフを介さず入力を開始します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">02</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>情報入力・規約同意・本人確認</h3>
+              <p>氏名・住所・プランなどを入力し、利用規約に同意。顔写真の撮影と手書き署名までをこの画面で完了します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">03</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>送信</h3>
+              <p>「送信」ボタンを押すと、入力データがAutomation機能のトリガーとして送信されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">04</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>契約書PDFの自動生成</h3>
+              <p>裏側でGoogleドキュメントのテンプレートにデータが自動で流し込まれ、契約書PDFが即座に作成されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">05</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>保存・自動送信</h3>
+              <p>生成されたPDFは顧客別フォルダにGoogleドライブへ自動保存され、お客様・店舗の両方にメールで自動送信されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">06</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>完了・次のお客様へ</h3>
+              <p>画面はサンクスページへ自動遷移し、間を置かず次のお客様の入力を受け付けられる状態に戻ります。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- UI/UX -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">UI / UX</div>
+        <h2>使いやすさの工夫</h2>
+        <div class="why">
+          <div>
+            <h3>安心して使える権限設計</h3>
+            <p>管理者以外のアカウントでは「新規登録」「利用規約」メニューのみが表示され、他のお客様の入力内容は一切見えません。並んでいる後ろのお客様の視線を気にせず入力に集中できます。</p>
+          </div>
+          <div>
+            <h3>圧迫感のない画面デザイン</h3>
+            <p>項目ごとに見出しをつけてページを分割し、長文になりがちな利用規約もスッキリ読みやすいレイアウトに整理しています。</p>
+          </div>
+          <div>
+            <h3>スムーズな受付ループ構造</h3>
+            <p>送信後は専用のサンクスページへ自動遷移。スタッフが手を止めることなく、そのまま次のお客様の受付に移れます。</p>
+          </div>
+          <div>
+            <h3>入力ミスを防ぐ入力補助</h3>
+            <p>年齢は生年月日から自動計算、プラン選択はEnum型、署名はSignature型を採用。タイピングの手間を最小限にして、誤入力そのものを防ぐ設計です。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Links</div>
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta" href="https://note.com/co9_note/n/nf260c86b9e54" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">NOTE</span>開発の裏側をnoteで読む</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなツールが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

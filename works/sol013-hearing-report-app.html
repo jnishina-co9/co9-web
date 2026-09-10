@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>ヒアリング準備・議事録作成 自動化ツール | 深森呼吸</title>
+  <meta name="description" content="打合せ前の企業調査・ヒアリングシート作成と、打合せ後の議事録・ネクストアクション作成を、コマンド1行でAIが自動化するワークフローの紹介と仕様。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&family=Outfit:wght@400;600;700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* ============================================================
+       SOLUTIONテンプレ(仕様書兼作品紹介・スライド型)
+       - 背景は白で統一
+       - このテンプレは直角基調(角丸はBACKピルのみ)
+       ============================================================ */
+
+    body {
+      line-height: 1.8;
+    }
+
+    .en {
+      font-family: var(--font-accent);
+      letter-spacing: 0.12em;
+    }
+
+    /* section.slab / .hero / .inner の幅・paddingはwork.cssで共通定義 */
+
+    .slab--white { background: var(--color-white); }
+
+    /* セクション見出し共通(アクセントラベル+大見出し)
+       ※CTAボタン内の .label(work.css)と衝突しないよう .sec-label にする */
+    .sec-label {
+      font-family: var(--font-accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-black);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+    .slab h2 {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 40px;
+    }
+
+    /* Quick Summary内の副見出し(Specification等、独立セクションほどの重みは持たせない) */
+    .sub-heading {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin: 0 0 20px;
+    }
+
+    /* ===== HERO(タイトルカード → リード文 → デモ動画) ===== */
+    .hero p.lead {
+      font-size: 18px;
+      margin: 0 0 64px;
+    }
+
+    /* ===== Quick Summary(Project/Date/Tool/URLのベントーカード) ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 96px; /* スラブ内の次見出しとの境界もスラブ間と同じ96pxに揃える */
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .url-line {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .url-line a {
+      font-family: var(--font-accent);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 4px;
+    }
+
+    .url-line a:hover {
+      text-decoration: none;
+    }
+
+    /* ===== Concept(コンセプトコピー+4セルグリッド) ===== */
+    .concept-copy {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.9;
+      margin: 0 0 40px;
+    }
+    .black { color: var(--color-black); }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2行2列で固定(バランス優先) */
+      border-top: 1px solid var(--color-charcoal);
+      border-left: 1px solid var(--color-charcoal);
+    }
+    .grid4 .cell {
+      border-right: 1px solid var(--color-charcoal);
+      border-bottom: 1px solid var(--color-charcoal);
+      padding: 32px 26px;
+    }
+    .grid4 .num {
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 30px;
+      color: var(--color-black);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .grid4 h3 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+    .grid4 p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Features(番号付き見出し+説明) ===== */
+    .feat {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+    }
+    .feat h3 {
+      font-size: 18px;
+      font-weight: 700;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--color-charcoal);
+      margin: 0 0 16px;
+    }
+    .feat h3 .fnum {
+      font-family: var(--font-accent);
+      color: var(--color-black);
+      font-weight: 800;
+      margin-right: 10px;
+    }
+    .feat p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Flow(縦ライン+単一列。マーカーはホバーで四角→ひし形に回転) ===== */
+    .steps {
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .steps::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 68px;
+      width: 1px;
+      background: var(--divider-strong);
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 24px 1fr;
+      align-items: start;
+      padding-bottom: 48px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step .step-num {
+      grid-column: 1;
+      font-family: var(--font-accent);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--color-black);
+      padding-top: 2px;
+    }
+    .step .step-marker {
+      position: absolute;
+      top: 9px;
+      left: 63px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-charcoal);
+      transform: rotate(0deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+    }
+    .step:hover .step-marker {
+      transform: rotate(45deg) scale(1.8);
+      background: var(--color-black);
+    }
+    .step .step-content {
+      grid-column: 3;
+      padding-left: 4px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .step:hover .step-content {
+      transform: translate(10px, -6px);
+    }
+    .step .step-phase {
+      font-family: var(--font-accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--color-gray);
+      display: block;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+    .step p { font-size: 15.5px; margin: 0; }
+    .step code {
+      font-family: var(--font-accent), Consolas, monospace;
+      font-weight: 600;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .step-marker, .step-content { transition: none; }
+    }
+
+    /* ===== UI/UX(縦線リスト) ===== */
+    .why {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    .why > div { border-left: 4px solid var(--color-black); padding-left: 22px; }
+    .why h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+    .why p { font-size: 15.5px; margin: 0; }
+
+    /* ===== 基本情報テーブル(概要セクションに統合) ===== */
+    table.spec {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-white);
+    }
+    table.spec th, table.spec td {
+      border: 1px solid var(--color-charcoal);
+      padding: 15px 20px;
+      font-size: 15.5px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.spec th {
+      background: var(--color-bg);
+      font-weight: 700;
+      width: 26%;
+      white-space: nowrap;
+    }
+    /* このテンプレのチップは直角 */
+    table.spec .chip { border-radius: 0; }
+
+    /* ===== おわりに+リンク ===== */
+    .slab .link-list { max-width: 460px; }
+    /* このテンプレのCTAボタンは直角 */
+    .slab .cta { border-radius: 0; }
+
+    /* ===== デモ動画(ウェブサイト型と同デザイン・同幅で統一) =====
+       ※このテンプレは直角基調だが、ブラウザ枠だけは
+         ウェブサイト型ページ(web008-line-tools.html)と同じ角丸+影+全幅で統一 */
+    .mock-pc {
+      margin: 0; /* figureのUAマージン打ち消し(次スラブとの96pxはheroのpaddingが担う) */
+      width: 100%;
+      background: var(--color-white);
+      border-radius: 20px; /* サイト直角化後もブラウザ枠のみ角丸を維持 */
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(26, 26, 26, 0.10), 0 10px 28px rgba(26, 26, 26, 0.14);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--color-bg);
+    }
+
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+
+    .mock-dot:nth-child(1) { background: var(--color-black); }
+    .mock-dot:nth-child(2) { background: var(--color-charcoal); }
+
+    .mock-url {
+      margin-left: 8px;
+      background: var(--color-bg);
+      color: var(--color-charcoal);
+      font-family: var(--font-accent);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      padding: 3px 14px;
+      line-height: 1.6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-pc video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== レスポンシブ(自動段組み+560px調整 ※work.cssと統一) ===== */
+    @media (max-width: 560px) {
+      .grid4 { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; margin-bottom: 48px; }
+      .url-line a { font-size: 13.5px; }
+      .mock-bar { padding: 9px 12px; }
+      table.spec th, table.spec td { display: block; width: 100%; border-top: none; }
+      table.spec tr:first-child th { border-top: 1px solid var(--color-charcoal); }
+      .hero p.lead { font-size: 15px; }
+      .step .step-num { font-size: 26px; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="inner">
+        <div class="title-card">
+          <p class="eyebrow">Solution</p>
+          <h1>ヒアリング準備・議事録作成 自動化ツール</h1>
+        </div>
+
+        <p class="lead">打合せの「前の準備」と「後の議事録」を、コマンド1行でAIが自動化。誰が聞いても同じ質でヒアリングでき、その記録がそのまま次の提案に使える仕組みで、打合せ当日はネット接続不要で使えるツールを開発しました。</p>
+
+        <figure class="mock-pc" aria-label="ツールの操作デモ動画">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-url">hearing-report-app.html(ローカル)</span>
+          </div>
+          <video src="../img/works/sol013/demo.mp4" width="1920" height="1080" autoplay muted loop playsinline controls preload="metadata"></video>
+        </figure>
+      </div>
+    </section>
+
+    <!-- QUICK SUMMARY -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Quick Summary</div>
+        <h2>概要</h2>
+        <div class="about-grid">
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">ヒアリング準備・議事録作成 自動化ツール</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2026年7月</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Claude Code</p>
+          </div>
+          <div class="about-card about-card--wide">
+            <p class="about-label">URL</p>
+            <p class="url-line">非公開(自分専用の業務効率化ツールのため)</p>
+          </div>
+        </div>
+
+        <div class="sec-label en">Specification</div>
+        <h3 class="sub-heading">仕様</h3>
+        <table class="spec">
+          <tbody>
+            <tr>
+              <th>技術スタック</th>
+              <td>
+                <div class="chips">
+                  <span class="chip">Claude Code</span>
+                  <span class="chip">Web Search</span>
+                  <span class="chip">HTML / CSS / JavaScript</span>
+                  <span class="chip">Node.js</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>動作環境</th>
+              <td>Claude CodeまたはAntigravity(Googleのエージェント型IDE。同じ手順書をどちらにも用意し、同じコマンドで実行可能)が使えるPC。生成されるヒアリングアプリ自体はブラウザだけで動作し、ネット接続不要</td>
+            </tr>
+            <tr>
+              <th>セキュリティ・データの扱い</th>
+              <td>打合せ中は外部と通信するプログラムを含まず、データはそのPCの中だけに保存(音声データ自体は保存されません)。議事録作成時のみヒアリング内容をAIサービスへ送信するため、送信するタイミング・内容は人が選べる設計にしています</td>
+            </tr>
+            <tr>
+              <th>制約・スコープ外</th>
+              <td>汎用の議事録SaaS(インターネット経由で使うソフト)ではなく、自分の業務(企業調査〜提案の方向性整理)に特化した個人利用ツール/クライアントへの外部公開・複数人での同時利用は非対応</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONCEPT -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Concept</div>
+        <h2>誰が聞いても、同じ質でヒアリングできる仕組み</h2>
+        <p class="concept-copy">打合せの現場は電波が不安定なことも多く、オンライン前提の記録ツールは使えません。<span class="black">調査・質問設計・議事録作成はAIで自動化しつつ、打合せ当日はネット不要・ファイルを開けばすぐ使えるシンプルな設計</span>にすることで、準備・事後作業の負担と現場での使いにくさを同時に解決しました。</p>
+        <div class="grid4">
+          <div class="cell">
+            <span class="num en">01</span>
+            <h3>一貫した質問設計</h3>
+            <p>担当者によって聞く内容や深さがバラつかないよう、経営課題から現場の実情まで聞く「共通10問」を毎回同じ順番で用意。ヒアリング経験が浅い人が担当しても、聞き漏れが起きにくい設計です。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">02</span>
+            <h3>事実と推測を混同しない</h3>
+            <p>AIによるWeb調査で不明な点には必ず「(推測)」と明記。ヒアリングで聞けなかったことも「(要確認)」と書き、事実と推測が混ざったまま提案してしまう事故を防ぎます。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">03</span>
+            <h3>その場で完結する現場設計</h3>
+            <p>アプリはインターネットに繋がっていなくても使え、回答は自動保存。質問ごとに「こう聞くと伝わりやすい」という言い換え例も表示されるので、ITに詳しくない相手にも自然に聞けます。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">04</span>
+            <h3>提案につながる設計</h3>
+            <p>聞いた内容はメモで終わらせず、「そもそも必要か」「まとめられないか」といった業務改善の視点(ECRS=排除・結合・交換・簡素化という改善フレームワーク)で整理し、そのまま提案用の方向性メモとして書き出します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">Features</div>
+        <h2>3つの成果物</h2>
+        <div class="feat">
+          <div>
+            <h3><span class="fnum en">1</span>企業レポート＋ヒアリングシートのHTMLファイル</h3>
+            <p>Web調査(最大3回)で企業情報と業界課題をまとめ、聞き方の台本付きの質問リストを自動生成。ネット接続不要で、その場で回答を保存できます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">2</span>議事録＋ネクストアクションのHTMLファイル(自分用)</h3>
+            <p>話題・決定事項・宿題を整理し、ECRS(排除・結合・交換・簡素化という業務改善フレームワーク)の視点で改善の方向性まで自動でまとめる自分専用メモ。記録にないことは書きません。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">3</span>議事録＋ネクストアクションのMDファイル(クライアント提出用)</h3>
+            <p>自分専用メモの部分を除き、そのまま先方に渡せる下書き(Markdownファイル)として自動生成。貼り付けるだけで仕上がります。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Flow</div>
+        <h2>使い方は3ステップ</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num en">01</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Before</span>
+              <h3>準備する</h3>
+              <p><code>/j-hearing 企業名</code>と入力するだけ。AIがWeb調査から企業レポート作成、質問リスト設計、ヒアリングアプリの生成までを自動で進めます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">02</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">During</span>
+              <h3>打合せで使う</h3>
+              <p>アプリを開き、企業レポートで予習した後、ヒアリングシートで回答を選択・メモ欄に記入。すべて自動保存され、質問後のECRS振り返り欄に改善アイデアもメモできます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">03</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">After</span>
+              <h3>議事録を作る</h3>
+              <p>「結果をコピー」してAIに貼り付け、<code>/j-report 企業名</code>を実行。AIが話題・要点・決定事項・宿題を整理し、提案の方向性メモまで自動作成します。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- UI/UX -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">UI / UX</div>
+        <h2>使いやすさの工夫</h2>
+        <div class="why">
+          <div>
+            <h3>自然な聞き方となる台本を表示</h3>
+            <p>選択肢だけでは機械的な受け答えになりがち。各質問に言い換えと業種の具体例を表示し、誰が聞いても自然な会話になるようにしました。</p>
+          </div>
+          <div>
+            <h3>専門用語への注釈を徹底</h3>
+            <p>レポート・質問・議事録のすべてで、専門用語に一言説明を添えるルールを仕組み化。ITに詳しくない相手にもそのまま見せられる品質にしています。</p>
+          </div>
+          <div>
+            <h3>1ファイル完結で、現場を選ばない</h3>
+            <p>打合せ現場は電波が不安定だったり、借り物のPCだったりします。外部プログラムに頼らない1ファイル完結にすることで、ダブルクリックだけでどんな環境でも確実に動くようにしました。</p>
+          </div>
+          <div>
+            <h3>AIに書かせる範囲を限定</h3>
+            <p>毎回同じ品質で動くよう、AIが書き換えて良い範囲を、「企業名」「企業レポート」「質問データ」の3か所に限定。コードには手を加えず、差し込み後の抜け漏れも自動でチェックしています。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Links</div>
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta" href="https://jnishina-co9.github.io/demo-hearing-report-app/demo-hearing.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">DEMO 1</span>ヒアリングアプリのデモを見る</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://jnishina-co9.github.io/demo-hearing-report-app/demo-report.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">DEMO 2</span>議事録ファイルのサンプルを見る</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://jnishina-co9.github.io/demo-hearing-report-app/spec.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">SPEC</span>仕様書を見る(機能の詳細)</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなツールが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

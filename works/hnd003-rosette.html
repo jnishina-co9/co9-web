@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>ロゼット「GUEST」＆「STAFF」 | 深森呼吸</title>
+  <meta name="description" content="披露宴や二次会、企業のセレモニーなどで使えるロゼット「GUEST」＆「STAFF」のご紹介ページ。光沢のあるサテンとボーダー柄のテールリボンを組み合わせ、安全ピン＆クリップの2WAY仕様で取り付けられるハンドメイド作品です。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <script type="module" src="../js/lightbox.js"></script>
+  <style>
+    /* ============================================
+       このページ固有のスタイル(共通部分はwork.cssへ)
+       ============================================ */
+
+    /* ---- この作品について(ハンドメイド向けカード構成) ---- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ホバーで大胆に傾く(奇数カードは左、偶数カードは右へ) */
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-card--black {
+      background: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card--black .about-label {
+      color: var(--color-white);
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    /* 商品紹介文など、段落が複数あるカードの行間 */
+    .about-card p + p {
+      margin-top: 1em;
+    }
+
+    /* 作品タイトル(PROJECT) */
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    /* セクション間の余白: 全テンプレ統一の96px(スマホ48px)。
+       前要素の下マージンとはマージン相殺で重なるため、境界は常に96pxになる */
+    .about,
+    .links {
+      margin-top: 96px;
+    }
+
+    /* ---- レスポンシブ ---- */
+    @media (max-width: 560px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about,
+      .links {
+        margin-top: 48px;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+    <article class="work-article">
+      <section class="title-card">
+        <p class="eyebrow">Handmade</p>
+        <h1>ロゼット「GUEST」・「STAFF」</h1>
+      </section>
+
+      <!-- メインビジュアル: 4:3を左寄せ+縦書き番号01を画像に重ねる(クリックで拡大) -->
+      <div class="hero-row">
+        <figure class="hero-visual">
+          <a class="g-link" href="../img/works/hnd003/hnd03-1.webp">
+            <img src="../img/works/hnd003/hnd03-1.webp" alt="GUEST用(ターコイズ)とSTAFF用(オリーブグリーン)、2種類のロゼットを並べた全体像" width="2000" height="1500" loading="lazy">
+          </a>
+        </figure>
+        <span class="sc-num" aria-hidden="true">01</span>
+      </div>
+
+      <!-- 紹介文(商品紹介文): アクセントカードにして画像の右下に重ねる -->
+      <div class="hero-desc">
+        <p>披露宴や二次会のほか、企業のセレモニーやレセプションパーティーなど、様々なシーンでご活用いただけるロゼットを製作しました。</p>
+        <p>ゲスト用には、光沢のある上品なサテン生地を使った明るいグリーンをプリーツリボンに、青×白のボーダーカラーをテールリボンで組み合わせ、大切なゲストに身に付けていただくに相応しい明るさや爽やかさを演出しました。</p>
+        <p>スタッフ用には、同じく光沢のあるサテン生地を使ったリーフグリーンをプリーツリボンに、茶×白のボーダーカラーをテールリボンで使用し、スタッフとして大切なゲストをお迎えする際に必要な落ち着いた雰囲気と、ちょっとした遊び心を演出できる色を組み合わせました。</p>
+        <p>裏面にある装着具は安全ピンとクリップの2WAY仕様で、しっかりとピン留めしたり、洋服に穴を開けずに取り付けることができます。みんなでお揃いを身に付けるだけで一層華やかとなり、空間全体の統一感も演出できます。ハレの日がより素敵な思い出になる様、一つ一つ心を込めてお届けします。</p>
+        <p>※ この商品は販売を終了しました。</p>
+      </div>
+
+      <!--
+        写真ショーケース: 誌面風レイアウト(縦書き番号+キャプション1行+写真)
+        - 番号はメイン画像が01、以降02〜の連番を手書きで振る
+        - キャプションはsc-title 1行だけ。左列(奇数番目)がブロックごと下にずれる
+      -->
+      <section class="showcase" aria-label="作品ギャラリー">
+
+        <figure class="sc-item">
+          <figcaption class="sc-caption">
+            <span class="sc-num" aria-hidden="true">02</span>
+            <span class="sc-title">GUEST用ロゼット</span>
+          </figcaption>
+          <a class="g-link" href="../img/works/hnd003/hnd03-2.webp">
+            <img src="../img/works/hnd003/hnd03-2.webp" alt="ターコイズのプリーツリボンに黄色ストライプの「GUEST」缶バッジ、紺×白のテールリボンを組み合わせたロゼットのアップ" width="2000" height="1500" loading="lazy">
+          </a>
+        </figure>
+
+        <figure class="sc-item">
+          <figcaption class="sc-caption">
+            <span class="sc-num" aria-hidden="true">03</span>
+            <span class="sc-title">STAFF用ロゼット</span>
+          </figcaption>
+          <a class="g-link" href="../img/works/hnd003/hnd03-3.webp">
+            <img src="../img/works/hnd003/hnd03-3.webp" alt="オリーブグリーンのプリーツリボンに水色ストライプの「STAFF」缶バッジ、茶×白のテールリボンを組み合わせたロゼットのアップ" width="2000" height="1500" loading="lazy">
+          </a>
+        </figure>
+
+        <figure class="sc-item">
+          <figcaption class="sc-caption">
+            <span class="sc-num" aria-hidden="true">04</span>
+            <span class="sc-title">装着具は2WAY仕様</span>
+          </figcaption>
+          <a class="g-link" href="../img/works/hnd003/hnd03-4.webp">
+            <img src="../img/works/hnd003/hnd03-4.webp" alt="ロゼット裏面のアップ。安全ピンとクリップを備えた2WAY仕様の装着具" width="2000" height="1500" loading="lazy">
+          </a>
+        </figure>
+
+        <figure class="sc-item">
+          <figcaption class="sc-caption">
+            <span class="sc-num" aria-hidden="true">05</span>
+            <span class="sc-title">リボン付き</span>
+          </figcaption>
+          <a class="g-link" href="../img/works/hnd003/hnd03-5.webp">
+            <img src="../img/works/hnd003/hnd03-5.webp" alt="GUESTとSTAFFのロゼットを並べ、テールリボンまで見える角度で撮った全体像" width="2000" height="1500" loading="lazy">
+          </a>
+        </figure>
+
+      </section><!-- /.showcase -->
+
+      <section class="about" aria-label="この作品について">
+        <h2 class="summary-title">この作品について</h2>
+        <div class="about-grid">
+
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">ロゼット「GUEST」・「STAFF」</p>
+          </div>
+
+          <div class="about-card about-card--wide">
+            <p class="about-label">Size</p>
+            <p>(約)タテ14cm × ヨコ8cm</p>
+          </div>
+
+          <div class="about-card about-card--black about-card--wide">
+            <p class="about-label">Memo</p>
+            <p>ハンドメイド品のため、サイズやパーツの位置に多少の誤差が生じることがございます。個体差による返品・交換を承りかねますことをご了承ください。</p>
+          </div>
+
+        </div>
+      </section><!-- /.about -->
+
+      <section class="links">
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <!-- 販売ページがある作品はCONTACTの上にSHOPボタン(class="cta")を、note記事があればNOTEボタンを追加する -->
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんな作品が欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

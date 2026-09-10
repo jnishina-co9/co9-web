@@ -1,0 +1,1004 @@
+/* ============================================================
+   深森呼吸 作品詳細ページ(ハブページ)共通スタイル
+   - 各ページ固有の調整は、各HTML内の<style>に書く(CLAUDE.md参照)
+   - デザイントークンは tokens.css で共通定義(style.cssと共有)
+   ============================================================ */
+@import url("tokens.css");
+
+/* ---- 初期化 ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 2;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ============================================================
+   ヘッダー(ロゴのみ・中央寄せ/固定なし)
+   ============================================================ */
+.work-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* 上下34px: トップページのヘッダー高さ(隠れたハンバーガーボタン分)とロゴの位置を揃える */
+  padding: 34px clamp(20px, 5vw, 56px);
+}
+
+.work-logo {
+  display: inline-flex;
+  transition: opacity 0.3s ease;
+}
+
+.work-logo img {
+  height: 20px;
+  width: auto;
+}
+
+/* ロゴ画像は黒塗りSVGの固定色のため、ダークモードでは色を反転して見えるようにする */
+:root[data-theme="dark"] .work-logo img {
+  filter: invert(1);
+}
+
+.work-logo:hover,
+.work-logo:focus-visible {
+  opacity: 0.6;
+}
+
+.work-logo:focus-visible {
+  outline: 3px solid var(--color-charcoal);
+  outline-offset: 4px;
+}
+
+/* ============================================================
+   トップに戻るボタン(右下固定)
+   - ページ表示から少し経ってふわっと出現し、そのまま固定表示
+   - ホバーで「TOP」が現れ、矢印が右上向きに変化
+   ============================================================ */
+.totop {
+  position: fixed;
+  right: clamp(16px, 4vw, 40px);
+  bottom: clamp(16px, 4vw, 40px);
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-black);
+  color: var(--color-white);
+  border: 2px solid var(--color-black);
+  border-radius: 999px;
+  height: 40px;
+  padding: 0 11px;
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  opacity: 0;
+  animation: totop-fade-in 0.6s ease forwards;
+  animation-delay: 2.5s;
+  transition: background 0.45s ease, color 0.45s ease;
+}
+
+@keyframes totop-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.totop-arrow {
+  /* 幅を固定して「余白+矢印」の合計を高さ40pxと一致させる(正円にするため) */
+  display: inline-flex;
+  justify-content: center;
+  width: 14px;
+  font-size: 1rem;
+  line-height: 1;
+  transform: rotate(-90deg);
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.totop-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.5s ease, opacity 0.4s ease, margin 0.5s ease;
+}
+
+.totop:hover,
+.totop:focus-visible {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+.totop:hover .totop-label,
+.totop:focus-visible .totop-label {
+  max-width: 60px;
+  opacity: 1;
+  margin-right: 8px;
+}
+
+.totop:hover .totop-arrow,
+.totop:focus-visible .totop-arrow {
+  transform: rotate(-45deg);
+}
+
+/* ============================================================
+   本文
+   ============================================================ */
+.work-article {
+  max-width: 880px;
+  margin: 0 auto;
+  /* 左右の余白はclamp()で画面幅に応じてなめらかに増減させ、
+     スマホ〜PCまですべての幅で最低限の余白を確保する */
+  padding: clamp(16px, 4vw, 40px) clamp(24px, 5vw, 40px) 40px;
+}
+
+/* ============================================================
+   スラブ型レイアウト(複数セクションを積み重ねるテンプレート)
+   about/profile.html、works/sol-*.html など「slab」構成のページ共通。
+   本文幅は.work-articleと同じ計算式(max-width 880px + 左右clamp(24-40px))
+   に揃えているため、ページ側で再定義しないこと
+   ============================================================ */
+section.slab { padding: 48px 0; } /* スラブ間=48px+48px=96px(全テンプレ統一のセクション間余白) */
+/* 先頭セクションのみ: 他テンプレ(.work-article/.hero)と上の空きを揃える */
+section.slab--lead { padding-top: 40px; }
+.hero { padding: 40px 0 48px; }
+.inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 40px);
+}
+
+/* ---- タイトル: カードと同じ アクセント背景×白文字 ---- */
+.title-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* トップページの一番上のカード(初期状態)と高さを揃える(1マス分=282px) */
+  min-height: 282px;
+  background: var(--color-black);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  padding: clamp(28px, 5vw, 48px);
+  margin-bottom: clamp(40px, 7vw, 88px);
+}
+
+.title-card .eyebrow {
+  font-family: var(--font-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.title-card h1 {
+  font-family: var(--font-accent);
+  font-size: clamp(26px, 4.5vw, 32px);
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* ---- リード文 ---- */
+.work-lead {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 2;
+  margin: 0 0 64px;
+}
+
+/* ============================================================
+   セクション見出し・チップ表示 共通
+   ============================================================ */
+/* セクション見出し共通: アクセント色の縦線+太字(「この作品について」「もっと詳しく」) */
+.summary-title,
+.links h2 {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  border-left: 5px solid var(--color-black);
+  padding-left: 16px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+/* カードの外に出した見出しとカードの間隔 */
+.summary-title {
+  margin-bottom: 18px;
+}
+
+/* 見出し直下にボタンが続く場合の間隔(案文なし) */
+.links h2 {
+  margin-bottom: 40px;
+}
+
+/* 技術スタックなどのチップ表示 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 3px;
+}
+
+.chip {
+  background: var(--color-black);
+  color: var(--color-white);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-family: var(--font-accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   リンクボタン
+   ============================================================ */
+.link-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+  max-width: 460px;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  text-decoration: none;
+  background: var(--color-black);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  padding: 15px 18px 15px 28px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.cta .circle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: 18px;
+  font-weight: 700;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.3s ease, color 0.3s ease;
+}
+
+.cta:hover {
+  background: var(--color-charcoal);
+  transform: translateY(-3px);
+}
+
+.cta:hover .circle {
+  transform: rotate(-45deg);
+  color: var(--color-charcoal);
+}
+
+.cta:focus-visible {
+  outline: 3px solid var(--color-charcoal);
+  outline-offset: 3px;
+}
+
+/* CONTACT用: 白背景に反転(文字色と同じ枠線) */
+.cta--white {
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  border: 1px solid var(--color-charcoal);
+}
+
+.cta--white .circle {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.cta--white:hover {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.cta--white:hover .circle {
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  transform: rotate(-45deg);
+}
+
+.cta .sub {
+  font-family: var(--font-accent);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  display: block;
+  line-height: 1.4;
+}
+
+.cta .label {
+  line-height: 1.5;
+}
+
+/* ============================================================
+   フッター
+   ============================================================ */
+/* トップページ(.site-footer / .footer-copy)と同じ見た目に揃える */
+.work-footer {
+  text-align: center;
+  padding: 48px 24px 40px;
+}
+
+.work-footer p {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: 0.75rem;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  color: var(--color-gray);
+}
+
+/* ============================================================
+   ギャラリー型(グラフィック作品)共通
+   - ベントーグリッド: 3列。--big=2×2 / --wide=横2列 / --full=全幅
+   - キャプション(figcaption)は任意。無い画像は画像のみ表示される
+   ============================================================ */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.g-item {
+  position: relative;
+  margin: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-white);
+  aspect-ratio: 1 / 1;
+}
+
+.g-item--big {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.g-item--wide {
+  grid-column: span 2;
+  aspect-ratio: 2 / 1;
+}
+
+.g-item--full {
+  grid-column: 1 / -1;
+  aspect-ratio: 21 / 9;
+}
+
+.g-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: zoom-in;
+}
+
+.g-link:focus-visible {
+  outline: 3px solid #d4d4d4;
+  outline-offset: -3px;
+}
+
+.g-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.g-item:hover img {
+  transform: scale(1.045);
+}
+
+/* キャプション: 普段は隠し、ホバーでふわっと表示 */
+.g-item figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 26px 18px 12px;
+  background: linear-gradient(transparent, rgba(26, 26, 26, 0.82));
+  /* 常に暗いグラデーション上の文字なので、テーマに関わらず白固定 */
+  color: #ffffff;
+  font-size: 13.5px;
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.g-item:hover figcaption,
+.g-item:focus-within figcaption {
+  opacity: 1;
+  transform: none;
+}
+
+/* ホバーが無い端末(タッチ)では常時表示 */
+@media (hover: none) {
+  .g-item figcaption {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- ライトボックス(js/lightbox.jsが生成する<dialog>) ---- */
+.lightbox {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: min(92vw, 1000px);
+  width: 100%;
+  overflow: visible; /* ✕ボタンを枠の外に出すため */
+}
+
+.lightbox::backdrop {
+  background: rgba(26, 26, 26, 0.78);
+}
+
+.lightbox figure {
+  margin: 0;
+}
+
+/* 画像は元サイズを上限にする(引き伸ばすとぼやけるため)。
+   枠に収まらない大きい画像だけ、比率を保ったまま縮小される */
+.lightbox img {
+  display: block;
+  margin: 0 auto;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 78vh;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.5));
+}
+
+.lb-caption {
+  margin: 14px 0 0;
+  text-align: center;
+  /* 常に暗い背景(::backdrop)上の文字なので、テーマに関わらず白固定 */
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 1.7em;
+}
+
+.lb-btn {
+  position: absolute;
+  z-index: 1; /* 影付き画像(filter)より手前に出す */
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-accent);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+/* 画像が1枚のみの作品ではJS側でhidden属性を付けて前後ボタンを隠すため、
+   上のdisplay指定より優先させる */
+.lb-btn[hidden] {
+  display: none;
+}
+
+.lb-btn:hover,
+.lb-btn:focus-visible {
+  background: var(--color-charcoal);
+  transform: scale(1.08);
+}
+
+.lb-close {
+  top: -54px;
+  right: 0;
+}
+
+.lb-prev,
+.lb-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lb-prev { left: -8px; }
+.lb-next { right: -8px; }
+
+.lb-prev:hover,
+.lb-prev:focus-visible,
+.lb-next:hover,
+.lb-next:focus-visible {
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* ============================================================
+   写真グリッド型(ハンドメイド作品)共通
+   - お手本: works/hnd001-linen-shoulder-bag.html
+   - ヒーロー: 4:3画像を82%左寄せ+特大の縦書き番号01(アクセント色)を画像に重ね、
+     紹介文のアクセントカード(.hero-desc)を画像右下に重ねる誌面風の構図
+   - ギャラリー(.showcase): 縦書き番号02〜+キャプション右寄せ+写真。
+     2列グリッドで左列(奇数番目)を下げた階段状のリズム
+   - 拡大表示はギャラリー型と同じ lightbox.js(.g-link)を共用
+   ============================================================ */
+.hero-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 0;
+}
+
+.hero-visual {
+  flex: 0 1 82%;
+  margin: 0;
+  border-radius: var(--radius);
+  background: var(--color-white);
+}
+
+.hero-visual .g-link {
+  display: block;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.hero-visual img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hero-visual:hover img {
+  transform: scale(1.02);
+}
+
+/* ヒーローの番号は特大にして、画像に大胆に重ねる */
+.hero-row .sc-num {
+  font-size: clamp(84px, 12vw, 112px);
+  margin: 10px 0 0 -0.35em;
+  position: relative; /* 画像より手前に描画 */
+  pointer-events: none; /* 重なった部分でも画像クリック(拡大)を邪魔しない */
+}
+
+/* 紹介文(アクセントカード): 画像の右下に重ねて誌面風の構図に */
+.hero-desc {
+  position: relative;
+  z-index: 1; /* 画像より手前に */
+  width: min(600px, 76%);
+  margin: -72px 0 72px auto;
+  background: var(--color-black);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  padding: clamp(24px, 4.5vw, 40px) clamp(24px, 4.5vw, 44px);
+}
+
+.hero-desc p {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 2;
+}
+
+.hero-desc p + p {
+  margin-top: 1em;
+}
+
+/* 写真ショーケース: 左列(奇数番目)を下げた階段状の2列グリッド */
+.showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px 48px;
+}
+
+.sc-item {
+  margin: 0;
+}
+
+.sc-item:nth-child(odd) {
+  margin-top: 96px;
+}
+
+/* 番号(01〜)ラベル: すべて縦書き・右寄せ・アクセント色。
+   rotate(180deg)で読む向きを「下から上」に反転 */
+.sc-num {
+  display: block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-accent);
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: var(--color-black);
+  margin: 0 0 14px auto;
+}
+
+/* キャプション: 1行のみ・右寄せ(本文と同じ色・サイズ・太さ) */
+.sc-caption {
+  text-align: right;
+  margin: 0 0 12px;
+}
+
+.sc-title {
+  display: block;
+  font-size: 15.5px;
+  font-weight: 400;
+  line-height: 1.9;
+  color: var(--color-charcoal);
+}
+
+.sc-item .g-link {
+  display: block;
+  cursor: zoom-in;
+}
+
+.sc-item .g-link:focus-visible {
+  outline: 3px solid var(--color-charcoal);
+  outline-offset: 3px;
+}
+
+.sc-item img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* あそび心: ホバーでふわっと浮いて傾く(奇数=左、偶数=右) */
+.sc-item:hover img {
+  transform: translateY(-6px) rotate(-1.6deg) scale(1.02);
+}
+
+.sc-item:nth-child(even):hover img {
+  transform: translateY(-6px) rotate(1.6deg) scale(1.02);
+}
+
+/* ============================================================
+   法的ページ共通(プライバシーポリシー/クッキーポリシー/情報セキュリティ基本方針)
+   - お手本: about/privacypolicy.html, about/cookiepolicy.html, about/securityaction.html
+   - ページ固有の追加要素(cookiepolicyの.cookie-tools等、privacyの.legal-body ol等)は
+     各HTML内の<style>に残す
+   ============================================================ */
+.legal-body .law-row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  column-gap: 32px;
+  align-items: start;
+  margin: 40px 0;
+  border-left: 4px solid var(--color-charcoal);
+  padding-left: 14px;
+}
+
+.legal-body .law-num {
+  font-family: var(--font-accent);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-charcoal);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.legal-body .law-title {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--color-charcoal);
+  line-height: 1.6;
+  margin: 2px 0 0;
+}
+
+.legal-body .law-content p:last-child,
+.legal-body .law-content ol:last-child,
+.legal-body .law-content ul:last-child {
+  margin-bottom: 0;
+}
+
+.legal-body p {
+  font-size: 15.5px;
+  line-height: 2;
+  margin: 0 0 20px;
+}
+
+.legal-body a {
+  color: var(--color-charcoal);
+  font-weight: 700;
+}
+
+.legal-body .contact-link {
+  text-decoration: none;
+}
+
+.legal-date {
+  color: var(--color-gray);
+  font-size: 14px;
+}
+
+.legal-eol {
+  text-align: right;
+  font-size: 15.5px;
+  margin: 8px 0 0;
+}
+
+/* ============================================================
+   シャッフルカード型(AIアート作品)共通
+   - お手本: works/art001-ai-art.html
+   - js/shuffle-cards.js が有効/選択状態を管理する(仕組みはシンプルで、
+     対応する.shuffle-cardに is-active クラスを付け外しするだけ)
+   - どのデバイスでも縦並び: サムネイルの山(常に傾いて重なる)
+     →選択中バージョンの大きい画像→テキスト、の順に上から積む
+     (テキストは本文と同じフォントサイズを継承し、画像と同じ横幅の
+      リード文として掲載する。キャプションではなく本文として読ませる)
+   - 切り替え操作: サムネイル(ボタン)をPCはホバー/キーボードはフォーカスで
+     一時的にプレビュー。クリック/タップでその版を選択状態に固定する
+     (固定後、他をホバー/フォーカスして離すと固定した版の表示に戻る)
+   - 山型の角度・配置は各ページのstyleタグで指定する(お手本:
+     art001の扇形配置)。札が傾くと下端がレイアウト上の枠より下に
+     はみ出すため、画像との間隔(.shuffle-visualのmargin-top)は広めに取る
+   ============================================================ */
+.shuffle-cards {
+  --shuffle-thumb: 240px;
+  --shuffle-duration: 300ms;
+  /* サムネイルが正面を向くときだけ使う、弾むような緩急カーブ */
+  --shuffle-bounce-duration: 550ms;
+  --shuffle-bounce-easing: linear(0, 0.01 0.8%, 0.038 1.6%, 0.154 3.4%, 0.781 9.7%, 1.01 12.5%, 1.089 13.8%, 1.153 15.2%, 1.195 16.6%, 1.219 18%, 1.224 19.7%, 1.208 21.6%, 1.172 23.6%, 1.057 28.6%, 1.007 31.2%, 0.969 34.1%, 0.951 37.1%, 0.953 40.9%, 0.998 50.4%, 1.011 56%, 0.998 74.7%, 1);
+  display: grid;
+}
+
+.shuffle-card {
+  grid-area: 1 / 1;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  /* カード自体の余白部分はクリックを素通りさせ、後ろのサムネイルを押せるようにする */
+  pointer-events: none;
+}
+
+/* 選択中(is-active)のカードを最前面に */
+.shuffle-card.is-active {
+  z-index: 10;
+}
+
+/* 上段: サムネイルの山。幅620pxの列の中央に置く */
+.shuffle-row {
+  order: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 620px);
+  justify-content: center;
+}
+
+.shuffle-thumb {
+  display: block;
+  justify-self: center;
+  width: var(--shuffle-thumb);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform-origin: center;
+  cursor: pointer;
+  pointer-events: auto;
+  /* buttonタグの初期見た目をリセット */
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  transition: rotate var(--shuffle-bounce-duration) var(--shuffle-bounce-easing),
+              translate var(--shuffle-bounce-duration) var(--shuffle-bounce-easing);
+}
+
+.shuffle-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* is-activeのサムネイルだけ傾き・ずらしを戻して正面向きにする
+   (ページ側styleタグの.shuffle-card:nth-of-type(n)指定と詳細度が
+    同点にならないよう、.shuffle-cardsを含めて詳細度を1段階上げている。
+    同点だと後に読み込まれるページ側が常に勝ち、この動き自体が
+    無効化されてしまうので注意) */
+.shuffle-cards .shuffle-card.is-active .shuffle-thumb {
+  rotate: 0deg;
+  translate: 0 0;
+}
+
+/* 下段: 画像の下に続く本文(リード文と同じ読ませ方)。
+   画像(.shuffle-visual)と横幅を揃え、キャプションではなく
+   地の文として読める広さを確保する */
+.shuffle-data {
+  order: 3;
+  margin-top: 64px;
+}
+
+/* is-activeのカードだけ、テキストをふわっと表示する */
+.shuffle-data p {
+  opacity: var(--shuffle-opacity, 0);
+  transition: opacity var(--shuffle-duration) ease-in-out;
+  transition-delay: var(--shuffle-delay, 0ms);
+}
+
+/* フォントサイズは指定せず、本文(body)と同じ大きさを継承する */
+.shuffle-data p {
+  margin: 0;
+  line-height: 1.9;
+  translate: 0 var(--shuffle-y, 20px);
+}
+
+.shuffle-card.is-active {
+  --shuffle-opacity: 1;
+  --shuffle-y: 0;
+  --shuffle-delay: var(--shuffle-duration);
+  --shuffle-events: auto;
+}
+
+/* 下段: 選択中バージョンの大きい画像。横幅は.title-card・.work-leadと
+   揃え、.work-articleの内側いっぱいまで広げる(左右に別途余白は取らない)。
+   サムネイルは傾いた分だけ下にはみ出して見えるため、テキストとの間隔
+   (64px)と体感を揃えるには、はみ出し分を見込んで倍の余白を取る */
+.shuffle-visual {
+  order: 2;
+  margin-top: 128px;
+  opacity: var(--shuffle-opacity, 0);
+  transition: opacity var(--shuffle-duration) ease-in-out;
+  transition-delay: var(--shuffle-delay, 0ms);
+}
+
+.shuffle-visual .g-link {
+  display: block;
+  cursor: zoom-in;
+  pointer-events: var(--shuffle-events, none);
+}
+
+.shuffle-visual img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+/* ============================================================
+   レスポンシブ
+   ============================================================ */
+@media (max-width: 560px) {
+  /* スラブ型レイアウト共通(about/profile.html、works/sol-*.htmlなど) */
+  section.slab { padding: 24px 0; } /* スラブ間=24px+24px=48px */
+  section.slab--lead { padding-top: 32px; }
+  .hero { padding: 32px 0 24px; }
+
+  /* 写真グリッド型(ハンドメイド): 1列・段差なし。縦書き番号のリズムは維持 */
+  .hero-visual {
+    flex-basis: 88%;
+  }
+
+  .hero-row .sc-num {
+    font-size: 64px;
+  }
+
+  .hero-desc {
+    width: 92%;
+    margin: -28px 0 56px auto;
+  }
+
+  .showcase {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 64px;
+  }
+
+  .sc-item:nth-child(odd) {
+    margin-top: 0;
+  }
+
+  .sc-num {
+    font-size: 56px;
+    margin-bottom: 12px;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .g-item--big,
+  .g-item--wide,
+  .g-item--full {
+    grid-column: 1 / -1;
+  }
+
+  .g-item--big {
+    grid-row: auto;
+  }
+
+  .g-item figcaption {
+    font-size: 12px;
+    padding: 20px 12px 9px;
+  }
+
+  .lb-close { top: -52px; right: 4px; }
+  .lb-prev { left: 4px; }
+  .lb-next { right: 4px; }
+
+  /* シャッフルカード型(AIアート作品): サムネイルを縮小し、間隔も詰める
+     (レイアウトはPCと同じ縦並び。タップで切り替え=PCのホバーに相当) */
+  .shuffle-cards {
+    --shuffle-thumb: 130px;
+  }
+
+  .shuffle-visual {
+    margin-top: 48px;
+    margin-bottom: 20px;
+  }
+
+  .shuffle-data {
+    margin-top: 20px;
+  }
+
+  body {
+    font-size: 16px;
+  }
+
+  .work-lead {
+    font-size: 15px;
+  }
+
+  .summary-card .row {
+    grid-template-columns: 1fr;
+    padding: 14px 0;
+  }
+
+  .summary-card dt {
+    padding-top: 0;
+  }
+
+  .legal-body .law-row {
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .totop {
+    opacity: 1;
+  }
+}

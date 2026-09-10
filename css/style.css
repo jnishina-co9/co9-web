@@ -1,0 +1,1006 @@
+/* ============================================================
+   深森呼吸 ポートフォリオサイト
+   デスクトップファースト(基準: 1024px〜、コンテンツ幅1200px固定)
+   ブレークポイント: 768〜1023px / 〜767px
+   ============================================================ */
+@import url("tokens.css");
+
+/* ---- 初期化 ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ---- デザイントークン(このページ固有: グリッド・アニメーション) ---- */
+:root {
+  --content-max: 1200px;
+  --gap: 24px;
+  /* 1マスの大きさ: 画面幅に追従し、最大282pxで固定 */
+  --cell: min(calc((100vw - 120px) / 4), 282px);
+  /* カードのスライドと同じ速さ・柔らかさ(メニュー開閉と共通) */
+  --ease-slide: cubic-bezier(0.25, 0.8, 0.3, 1);
+}
+
+html {
+  background: var(--color-bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-charcoal);
+  background: var(--color-bg);
+  line-height: 1.8;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ============================================================
+   ヘッダー(全幅・スクロールで変化)
+   ============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+/* スクロール時: 背景が現れて引き締まる */
+.site-header.is-scrolled {
+  background: var(--header-bg-scrolled);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.header-inner {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 22px 32px;
+  transition: padding 0.3s ease;
+}
+
+.site-header.is-scrolled .header-inner {
+  padding: 12px 32px;
+}
+
+/* ロゴ: 通常はハンバーガーの左隣(中央寄り)。メニューを開くと左端へスライド */
+.logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-100% - 40px), -50%);
+  transition: left 0.9s var(--ease-slide), transform 0.9s var(--ease-slide);
+  text-decoration: none;
+  color: var(--color-charcoal);
+  line-height: 1.3;
+}
+
+.site-header.is-menu-open .logo {
+  left: 32px;
+  transform: translate(0, -50%);
+}
+
+.logo-mark {
+  height: 20px;
+  width: auto;
+}
+
+/* ロゴ画像は黒塗りSVGの固定色のため、ダークモードでは色を反転して見えるようにする */
+:root[data-theme="dark"] .logo-mark {
+  filter: invert(1);
+}
+
+/* ハンバーガー+フィルターナビ(中央) */
+.header-menu {
+  display: flex;
+  align-items: center;
+}
+
+/* フィルターと言語切替の入れ物。PC/タブレットではレイアウトに影響させない */
+.menu-panel {
+  display: contents;
+}
+
+/* ハンバーガーボタン(横棒2本) */
+.menu-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* 棒の間隔は2本の描画位置が画面拡大率(125%等)でも揃う値にする */
+  gap: 6px;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition: width 0.9s var(--ease-slide), opacity 0.5s ease;
+}
+
+/* メニューが開いたら横棒2本は消える(場所も詰める) */
+.site-header.is-menu-open .menu-toggle {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.menu-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-charcoal);
+}
+
+/* フィルターナビ: 通常は幅0で隠し、開くとピルボタンと同じ動きでスライド展開 */
+.filter-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--overlay-tint);
+  border-radius: 999px;
+  padding: 5px 0;
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  overflow: hidden;
+  transition: max-width 1.4s var(--ease-slide), opacity 0.9s ease,
+    margin 1.4s var(--ease-slide), padding 1.4s var(--ease-slide);
+}
+
+.site-header.is-menu-open .filter-nav {
+  max-width: 560px;
+  opacity: 1;
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.filter-btn {
+  white-space: nowrap;
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--color-charcoal);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, opacity 0.25s ease;
+}
+
+.filter-btn:hover {
+  opacity: 0.6;
+}
+
+.filter-btn.is-active {
+  background: var(--color-black);
+  color: var(--color-white);
+  opacity: 1;
+}
+
+/* 言語切替(常に右上) */
+.lang-switch {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-btn {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--color-gray);
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.lang-btn:hover {
+  color: var(--color-charcoal);
+}
+
+.lang-btn.is-active {
+  color: var(--color-black);
+}
+
+.lang-divider {
+  color: var(--color-gray);
+  font-size: 0.72rem;
+}
+
+/* タブレット・スマホ幅で「JA | EN」に短縮するための出し分け(既定はフル表記) */
+.lang-short {
+  display: none;
+}
+
+/* キーボード操作時のフォーカス表示 */
+.filter-btn:focus-visible,
+.lang-btn:focus-visible,
+.menu-toggle:focus-visible,
+.logo:focus-visible,
+.card-link:focus-visible {
+  outline: 3px solid var(--color-charcoal);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   カードグリッド(マス目 + スパンで3サイズ)
+   ============================================================ */
+.works {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 40px 24px 96px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, var(--cell));
+  grid-auto-rows: var(--cell);
+  grid-auto-flow: row dense;
+  gap: var(--gap);
+  justify-content: center;
+}
+
+.card {
+  position: relative;
+  background: var(--color-black);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: grab;
+  /* 縦スクロールは許可し、ドラッグはJS側で制御 */
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 白地黒枠パターン: 基本はcreationカテゴリ、column/about内は個別指定 */
+.card--outline {
+  background: var(--color-white);
+  color: var(--color-black);
+  border: 1px solid var(--color-black);
+}
+
+.card--outline .pill {
+  background: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+}
+
+.card--outline:hover .pill {
+  background: var(--color-white);
+  color: var(--color-black);
+}
+
+/* 薄グレー地パターン: column/aboutカテゴリの既定(枠線なし) */
+.card--muted {
+  background: var(--overlay-solid);
+  color: var(--color-charcoal);
+}
+
+.card--muted .pill {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.card--wide {
+  grid-column: span 2; /* 2:1 横長 */
+}
+
+.card--tall {
+  grid-row: span 2; /* 1:2 縦長 */
+}
+
+.card-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 20px 20px 16px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-tag {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.card-title {
+  font-family: var(--font-accent);
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.55;
+  margin: 8px 0 0;
+}
+
+.card-foot {
+  display: flex;
+  margin-top: 14px;
+}
+
+/* ---- カード内イラスト(タイトルとボタンの間の余白に収める) ---- */
+.card-illustration {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card-illustration img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* creationカテゴリ(白地黒枠)の作品サムネイルは、線画イラストと異なり
+   余白を作らず枠いっぱいにトリミングして敷き詰める */
+.card--outline .card-illustration img {
+  object-fit: cover;
+}
+
+/* ---- 作品サムネイルカード(card--photo): 普段は画像のみを全面表示し、
+   ホバー/フォーカスでタグ・タイトル・ピルを表示する
+   (work.cssの.g-item/figcaptionと同じ「暗いグラデーション+ふわっと表示」方式) ---- */
+.card--photo .card-illustration {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.card--photo .card-illustration img {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card--photo:hover .card-illustration img {
+  transform: scale(1.045);
+}
+
+/* 画像側の比率がカード比率と大きく異なる作品は、data.jsでfit:"contain"を指定すると
+   トリミングせず中央配置になる(上下左右に余白ができてよい場合用) */
+.card--fit-contain .card-illustration img {
+  object-fit: contain;
+}
+
+.card--fit-contain:hover .card-illustration img {
+  transform: none;
+}
+
+.card--photo .card-link::before,
+.card--photo .card-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.card--photo .card-link::before {
+  top: 0;
+  background: linear-gradient(rgba(26, 26, 26, 0.75), transparent);
+}
+
+.card--photo .card-link::after {
+  bottom: 0;
+  background: linear-gradient(transparent, rgba(26, 26, 26, 0.82));
+}
+
+.card--photo .card-head,
+.card--photo .card-foot {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.card--photo .card-head {
+  transform: translateY(-6px);
+}
+
+.card--photo .card-foot {
+  transform: translateY(6px);
+}
+
+.card--photo:hover .card-link::before,
+.card--photo:hover .card-link::after,
+.card--photo:focus-within .card-link::before,
+.card--photo:focus-within .card-link::after,
+.card--photo:hover .card-head,
+.card--photo:hover .card-foot,
+.card--photo:focus-within .card-head,
+.card--photo:focus-within .card-foot {
+  opacity: 1;
+  transform: none;
+}
+
+/* ホバーが無い端末(タッチ)では常時表示 */
+@media (hover: none) {
+  .card--photo .card-link::before,
+  .card--photo .card-link::after,
+  .card--photo .card-head,
+  .card--photo .card-foot {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 「お問い合わせ」カードのみ、右の余白を詰めて画像を右端いっぱいに寄せる */
+.card[data-id="contact"] .card-link {
+  padding-right: 0;
+}
+
+.card[data-id="contact"] .card-illustration img {
+  object-position: right center;
+}
+
+/* お問い合わせカードのイラストは白線画の固定色のため、グレー地(muted)では
+   見えるよう黒に反転する。ダークモードはmuted地自体が暗くなるので反転を解除し、
+   元の白のまま使う */
+.card[data-id="contact"] .card-illustration img {
+  filter: invert(1);
+}
+
+:root[data-theme="dark"] .card[data-id="contact"] .card-illustration img {
+  filter: none;
+}
+
+/* ============================================================
+   ダークモードカード(グリッド内の1枚として配置するスイッチ)
+   タイトルとボタンの間の余白に収める考え方は.card-illustrationと共通
+   ============================================================ */
+.theme-switch-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 40px;
+}
+
+/* 白背景のカードで目立つよう、黒地に白丸。
+   参考画像を採寸した比率(幅:高さ≈2.5:1、丸はトラック高さにほぼぴったり)に合わせる */
+.theme-switch {
+  position: relative;
+  width: 85px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-black);
+  cursor: pointer;
+}
+
+.theme-switch-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--color-white);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-switch[aria-pressed="true"] .theme-switch-knob {
+  transform: translateX(52px);
+}
+
+.theme-switch:focus-visible {
+  outline: 3px solid var(--color-charcoal);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   SOLUTION/CREATIONの紹介カード(リンクなし・常時テキスト表示)
+   タイトルは通常のカードタイトル(.card-title)と同じ1.02remで統一
+   ============================================================ */
+.card-intro-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.card-intro-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.card-intro-text {
+  font-size: 0.78rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* 顔イラストが首をかしげるように斜めに揺れる動き */
+@keyframes profile-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+
+.card[data-id="profile"] .card-illustration {
+  transform: translateY(12px);
+}
+
+.card[data-id="profile"] .card-illustration img {
+  transform-origin: bottom center;
+  animation: profile-sway 3.2s ease-in-out infinite;
+}
+
+/* ---- ピル型ボタン(白丸+アクセント色の矢印 → ホバーで反転+READ MORE) ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-white);
+  color: var(--color-black);
+  border: 2px solid var(--color-white);
+  border-radius: 999px;
+  height: 40px;
+  padding: 0 11px;
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  transition: background 0.45s ease, color 0.45s ease;
+}
+
+.pill-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.5s ease, opacity 0.4s ease, margin 0.5s ease;
+}
+
+.pill-arrow {
+  /* 幅を固定して「余白+矢印」の合計を高さ40pxと一致させる(正円にするため) */
+  display: inline-flex;
+  justify-content: center;
+  width: 14px;
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card:hover .pill {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.card:hover .pill-label {
+  max-width: 120px;
+  opacity: 1;
+  margin-right: 8px;
+}
+
+.card:hover .pill-arrow {
+  transform: rotate(-45deg);
+}
+
+/* ---- フィルターで対象外のカードは非表示 ---- */
+.card.is-hidden {
+  display: none;
+}
+
+/* ---- ドラッグ中の見た目 ---- */
+.card.is-dragging {
+  cursor: grabbing;
+  z-index: 1000;
+  opacity: 0.95;
+}
+
+/* ドラッグ中の空きスペース(見た目は出さず、場所だけ確保する) */
+.card-placeholder {
+  background: transparent;
+}
+
+/* ============================================================
+   カード詳細ポップアップ(js/main.jsが生成する<dialog>)
+   詳細ページを作らないカード用。中央表示はdialogの標準機能を利用
+   ============================================================ */
+.card-popup {
+  width: min(92vw, 880px);
+  max-height: min(86vh, 720px);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0;
+  background: var(--color-white);
+  color: var(--color-charcoal);
+}
+
+.card-popup::backdrop {
+  background: rgba(26, 26, 26, 0.78);
+}
+
+.popup-inner {
+  position: relative;
+  max-height: min(86vh, 720px);
+  overflow-y: auto;
+  padding: clamp(36px, 6vw, 48px) clamp(24px, 5vw, 44px);
+}
+
+/* 閉じるボタンはpopup-innerの外(スクロールしない位置)に置き、
+   ダイアログ右下に固定してスクロールしても隠れないようにする */
+.popup-close {
+  position: absolute;
+  bottom: var(--gap);
+  right: var(--gap);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  /* ポップアップが開いてから少し間を置いて、ふわっと出現する
+     (display:noneから再表示されるたびアニメーションが最初から再生される) */
+  animation: popup-close-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s backwards;
+}
+
+@keyframes popup-close-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.popup-close:hover,
+.popup-close:focus-visible {
+  background: var(--color-charcoal);
+  transform: scale(1.08);
+}
+
+.popup-tag {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gray);
+}
+
+.popup-title {
+  font-size: clamp(20px, 3.4vw, 26px);
+  font-weight: 800;
+  line-height: 1.55;
+  margin: 10px 0 0;
+}
+
+.popup-intro {
+  font-size: 15.5px;
+  line-height: 2;
+  margin: 20px 0 52px;
+}
+
+.popup-links .sec-label {
+  font-family: var(--font-accent);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gray);
+  margin: 0 0 4px;
+}
+
+.popup-links h3 {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  border-left: 5px solid var(--color-black);
+  padding-left: 14px;
+  line-height: 1.5;
+  margin: 0 0 18px;
+}
+
+.popup-links .link-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 460px;
+}
+
+.popup-links .cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  text-decoration: none;
+  background: var(--color-black);
+  color: var(--color-white);
+  border-radius: var(--radius);
+  padding: 14px 16px 14px 24px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.popup-links .cta:hover {
+  background: var(--color-charcoal);
+  transform: translateY(-3px);
+}
+
+.popup-links .cta--white {
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  border: 1px solid var(--color-charcoal);
+}
+
+.popup-links .cta--white:hover {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.popup-links .cta .circle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-black);
+  font-size: 16px;
+  font-weight: 700;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease,
+    color 0.3s ease;
+}
+
+.popup-links .cta:hover .circle {
+  transform: rotate(-45deg);
+  color: var(--color-charcoal);
+}
+
+.popup-links .cta--white .circle {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.popup-links .cta--white:hover .circle {
+  background: var(--color-white);
+  color: var(--color-charcoal);
+  transform: rotate(-45deg);
+}
+
+.popup-links .cta .sub {
+  font-family: var(--font-accent);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  display: block;
+  line-height: 1.4;
+}
+
+.popup-links .cta .label {
+  line-height: 1.5;
+}
+
+/* ============================================================
+   フッター
+   ============================================================ */
+.site-footer {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 24px 40px;
+  text-align: center;
+}
+
+.footer-copy {
+  margin: 0;
+  font-family: var(--font-accent);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-gray);
+}
+
+/* ============================================================
+   レスポンシブ
+   ============================================================ */
+
+/* ---- タブレット(768〜1023px): 3列に減らす ---- */
+@media (max-width: 1023px) {
+  :root {
+    --cell: min(calc((100vw - 88px) / 3), 282px);
+    --gap: 20px;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(3, var(--cell)); /* 4列→3列 */
+  }
+}
+
+/* ---- タブレット・スマホ(〜1023px): 言語切替は「JA | EN」に短縮 ---- */
+@media (max-width: 1023px) {
+  .lang-full {
+    display: none;
+  }
+
+  .lang-short {
+    display: inline;
+  }
+}
+
+/* ---- スマホ(〜767px): 1カラム表示 ---- */
+@media (max-width: 767px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .card,
+  .card--wide,
+  .card--tall {
+    grid-column: auto;
+    grid-row: auto;
+    aspect-ratio: 3 / 2;
+  }
+
+  /* スマホ: ロゴ左・ハンバーガー右上。タップでフィルター+言語切替のパネルを開閉 */
+  .header-inner {
+    padding: 16px 20px;
+    justify-content: space-between;
+  }
+
+  /* スマホではロゴは左上に固定(スライドさせない) */
+  .logo,
+  .site-header.is-menu-open .logo {
+    position: static;
+    transform: none;
+    transition: none;
+  }
+
+  /* ハンバーガーは開いても消さない(もう一度タップで閉じるため) */
+  .site-header.is-menu-open .menu-toggle {
+    width: 44px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* フィルター+言語切替をまとめたパネル(ヘッダー下・右寄せ) */
+  .menu-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    position: absolute;
+    top: calc(100% + 2px);
+    right: 12px;
+    padding: 20px 28px;
+    background: var(--overlay-solid);
+    border-radius: var(--radius);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.4s ease, transform 0.4s ease,
+      visibility 0s linear 0.4s;
+  }
+
+  .site-header.is-menu-open .menu-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* パネル内ではフィルターを縦並びのシンプル表示にする */
+  .filter-nav {
+    position: static;
+    transform: none;
+    flex-direction: column;
+    gap: 8px;
+    background: none;
+    max-width: none;
+    opacity: 1;
+    margin: 0;
+    padding: 0;
+    transition: none;
+  }
+
+  /* パネル内のボタンは背景なし。選択中以外はPCのホバーと同じ薄さ(0.6)で沈める */
+  .filter-btn {
+    font-size: 0.8rem;
+    padding: 14px 18px;
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  .filter-btn:hover {
+    opacity: 1;
+  }
+
+  .filter-btn.is-active {
+    background: none;
+    color: var(--color-charcoal);
+    opacity: 1;
+  }
+
+  .lang-switch {
+    position: static;
+    transform: none;
+    justify-content: center;
+    padding: 6px 0;
+  }
+
+  .lang-btn {
+    font-size: 0.85rem;
+    padding: 8px 4px;
+  }
+
+  .lang-divider {
+    font-size: 0.85rem;
+  }
+
+  /* 開いた時にPC用の内側余白(5px)が付かないようにする */
+  .site-header.is-menu-open .filter-nav {
+    margin: 0;
+    padding: 0;
+  }
+
+  .works {
+    padding-bottom: 64px;
+  }
+}
+
+/* ---- アニメーションを減らす設定の人向け ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

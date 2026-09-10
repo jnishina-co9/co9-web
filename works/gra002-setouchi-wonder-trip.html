@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>瀬戸内海、夏の離島へ『Wonder Trip』 | 深森呼吸</title>
+  <meta name="description" content="岡山県・笠岡諸島をPRするツール制作という設定で手がけた架空の観光ポスター。白銀比とグリッドでレイアウトを整え、写真とQRコードで「認知」と「興味」を狙った広告デザインです。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <script type="module" src="../js/lightbox.js"></script>
+  <style>
+    /* ============================================
+       このページ固有のスタイル(共通部分はwork.cssへ)
+       ============================================ */
+
+    /* ---- メインビジュアル(タイトルカードと同じ全幅で統一。2026-08-04変更) ---- */
+    .hero-visual {
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--color-white);
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: auto;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hero-visual:hover img {
+      transform: scale(1.02);
+    }
+
+    .hero-visual .g-link {
+      display: block;
+      cursor: zoom-in;
+    }
+
+    /* 画像が1枚のみのため、拡大表示の前後矢印(JS側で自動非表示)に加えて
+       閉じるボタンもこのページでは非表示にする(Esc/背景クリックで閉じられる) */
+    .lightbox .lb-close {
+      display: none;
+    }
+
+    /* ---- この作品について(簡略版ベントーグリッド) ---- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ホバーで大胆に傾く(奇数カードは左、偶数カードは右へ) */
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-card--black {
+      background: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card--black .about-label {
+      color: var(--color-white);
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    /* 作品タイトル(PROJECT) */
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    /* 作品ロゴカード(ロゴが無い案件ではカードごと削除) */
+    .about-card--logo {
+      display: grid;
+      place-items: center;
+    }
+
+    .about-card--logo img {
+      width: auto;
+      max-width: 100%;
+      height: 64px;
+    }
+
+    /* セクション間の余白: 全テンプレ統一の96px(スマホ48px)。
+       前要素の下マージンとはマージン相殺で重なるため、境界は常に96pxになる */
+    .about,
+    .links {
+      margin-top: 96px;
+    }
+
+    /* ---- レスポンシブ ---- */
+    @media (max-width: 560px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-card--logo {
+        min-height: 96px;
+      }
+
+      .about,
+      .links {
+        margin-top: 48px;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+    <article class="work-article">
+      <section class="title-card">
+        <p class="eyebrow">Graphic</p>
+        <h1>瀬戸内海、夏の離島へ『Wonder Trip』</h1>
+      </section>
+
+      <p class="work-lead">瀬戸内海の中心に浮かぶ岡山県の笠岡諸島をPRするためのツール制作という設定で、架空のポスターを制作しました。</p>
+
+      <!-- メインビジュアル: ポスター画像は1枚のみのため、大きく見せてクリックで拡大できるようにする -->
+      <section class="hero-visual" aria-label="メインビジュアル">
+        <a class="g-link" href="../img/works/gra002/01.webp">
+          <img src="../img/works/gra002/01.webp" alt="観光ポスター「瀬戸内海、夏の離島へ『Wonder Trip』」。青い海と島影の写真、笠岡諸島の地図、島々の紹介文、笠岡うみとしまの編集部のQRコードを配置したデザイン" width="3308" height="4678" loading="lazy">
+        </a>
+      </section>
+
+      <section class="about" aria-label="この作品について">
+        <h2 class="summary-title">この作品について</h2>
+        <div class="about-grid">
+
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">瀬戸内海、夏の離島へ『Wonder Trip』</p>
+          </div>
+
+          <!-- ロゴが無い案件ではこのカードごと削除し、TOOLをabout-card--wideにする -->
+          <div class="about-card about-card--logo">
+            <img src="../img/works/gra002/logo.svg" alt="Wonder Tripのロゴ" width="640" height="200" loading="lazy">
+          </div>
+
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Adobe Illustrator / Photoshop</p>
+          </div>
+
+          <div class="about-card about-card--black about-card--wide">
+            <p class="about-label">Design Concept</p>
+            <p>全体は白銀比とグリッドを使ってレイアウトを整えながら、情報をすっきりと見せることを心がけました。それぞれの島の情報など、詳細はWEBサイトで確認いただける様にQRコードを載せ、イメージ写真を大々的に使ったインパクトのあるデザインで、まずは笠岡諸島を知ってもらう・興味を持ってもらう「認知」と「興味」の機能を果たす広告づくりを意識し、できるだけシンプルに仕上げました。</p>
+          </div>
+
+        </div>
+      </section><!-- /.about -->
+
+      <section class="links">
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなデザインが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

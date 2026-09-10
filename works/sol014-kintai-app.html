@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>写真記録付き勤怠管理アプリ | 深森呼吸</title>
+  <meta name="description" content="タブレット1台で出退勤を写真付きに記録し、月末の労働時間・残業・深夜勤務・給与概算までを自動集計する勤怠管理アプリの紹介と仕様。導入コストゼロ・月額ゼロ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&family=Outfit:wght@400;600;700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* ============================================================
+       SOLUTIONテンプレ(仕様書兼作品紹介・スライド型)
+       - 背景は白で統一
+       - このテンプレは直角基調(角丸はBACKピルとデモ動画ブラウザ枠のみ)
+       ============================================================ */
+
+    body {
+      line-height: 1.8;
+    }
+
+    .en {
+      font-family: var(--font-accent);
+      letter-spacing: 0.12em;
+    }
+
+    /* section.slab / .hero / .inner の幅・paddingはwork.cssで共通定義 */
+
+    .slab--white { background: var(--color-white); }
+
+    /* セクション見出し共通(アクセントラベル+大見出し)
+       ※CTAボタン内の .label(work.css)と衝突しないよう .sec-label にする */
+    .sec-label {
+      font-family: var(--font-accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-black);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+    .slab h2 {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 40px;
+    }
+
+    /* Quick Summary内の副見出し(Specification等、独立セクションほどの重みは持たせない) */
+    .sub-heading {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin: 0 0 20px;
+    }
+
+    /* ===== HERO(タイトルカード → リード文 → デモ動画) =====
+       タイトルは他テンプレ共通の .title-card(work.css:アクセント背景×白文字)をそのまま使う
+       (--radius:0 のためこのカードも直角になり、直角基調と矛盾しない) */
+    .hero p.lead {
+      font-size: 17px;
+      margin: 0 0 64px;
+    }
+
+    /* ===== Quick Summary(Project/Date/Tool/URLのベントーカード。
+       web008-line-tools.htmlのabout-gridから4項目のみ流用。
+       カードは直角基調(--radius:0)のまま、ホバーの傾きだけcre-と同じにする) ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 96px; /* スラブ内の次見出しとの境界もスラブ間と同じ96pxに揃える */
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-card--black {
+      background: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card--black .about-label {
+      color: var(--color-white);
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .url-line {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .url-line a {
+      font-family: var(--font-accent);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 4px;
+    }
+
+    .url-line a:hover {
+      text-decoration: none;
+    }
+
+    .url-line + .url-line {
+      margin-top: 8px;
+    }
+
+    /* ===== Concept(コンセプトコピー+4セルグリッド) ===== */
+    .concept-copy {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.9;
+      margin: 0 0 40px;
+    }
+    .black { color: var(--color-black); }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2行2列で固定(バランス優先) */
+      border-top: 1px solid var(--color-charcoal);
+      border-left: 1px solid var(--color-charcoal);
+    }
+    .grid4 .cell {
+      border-right: 1px solid var(--color-charcoal);
+      border-bottom: 1px solid var(--color-charcoal);
+      padding: 32px 26px;
+    }
+    .grid4 .num {
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 30px;
+      color: var(--color-black);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .grid4 h3 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+    .grid4 p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Features(番号付き見出し+説明) ===== */
+    .feat {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+    }
+    .feat h3 {
+      font-size: 18px;
+      font-weight: 700;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--color-charcoal);
+      margin: 0 0 16px;
+    }
+    .feat h3 .fnum {
+      font-family: var(--font-accent);
+      color: var(--color-black);
+      font-weight: 800;
+      margin-right: 10px;
+    }
+    .feat p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Flow(縦ライン+単一列。マーカーはホバーで四角→ひし形に回転) ===== */
+    .steps {
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .steps::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 68px;
+      width: 1px;
+      background: var(--divider-strong);
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 24px 1fr;
+      align-items: start;
+      padding-bottom: 48px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step .step-num {
+      grid-column: 1;
+      font-family: var(--font-accent);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--color-black);
+      padding-top: 2px;
+    }
+    .step .step-marker {
+      position: absolute;
+      top: 9px;
+      left: 63px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-charcoal);
+      transform: rotate(0deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+    }
+    .step:hover .step-marker {
+      transform: rotate(45deg) scale(1.8);
+      background: var(--color-black);
+    }
+    .step .step-content {
+      grid-column: 3;
+      padding-left: 4px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .step:hover .step-content {
+      transform: translate(10px, -6px);
+    }
+    .step .step-phase {
+      font-family: var(--font-accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-charcoal);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+    .step p { font-size: 15.5px; margin: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .step-marker, .step-content { transition: none; }
+    }
+
+    /* ===== UI/UX(縦線リスト) ===== */
+    .why {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    .why > div { border-left: 4px solid var(--color-black); padding-left: 22px; }
+    .why h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+    .why p { font-size: 15.5px; margin: 0; }
+
+    /* ===== 基本情報テーブル(概要セクションに統合) ===== */
+    table.spec {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-white);
+    }
+    table.spec th, table.spec td {
+      border: 1px solid var(--color-charcoal);
+      padding: 15px 20px;
+      font-size: 15.5px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.spec th {
+      background: var(--color-bg);
+      font-weight: 700;
+      width: 26%;
+      white-space: nowrap;
+    }
+    /* このテンプレのチップは直角 */
+    table.spec .chip { border-radius: 0; }
+
+    /* ===== おわりに+リンク ===== */
+    .slab .link-list { max-width: 460px; }
+    /* このテンプレのCTAボタンは直角 */
+    .slab .cta { border-radius: 0; }
+
+    /* ===== デモ動画(ウェブサイト型と同デザイン・同幅で統一) =====
+       ※このテンプレは直角基調だが、ブラウザ枠だけは
+         ウェブサイト型ページ(web008-line-tools.html)と同じ角丸+影+全幅で統一 */
+    .mock-pc {
+      margin: 0; /* figureのUAマージン打ち消し(次スラブとの96pxはheroのpaddingが担う) */
+      width: 100%;
+      background: var(--color-white);
+      border-radius: 20px; /* サイト直角化後もブラウザ枠のみ角丸を維持 */
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(26, 26, 26, 0.10), 0 10px 28px rgba(26, 26, 26, 0.14);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--color-bg);
+    }
+
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+
+    .mock-dot:nth-child(1) { background: var(--color-black); }
+    .mock-dot:nth-child(2) { background: var(--color-charcoal); }
+
+    .mock-url {
+      margin-left: 8px;
+      background: var(--color-bg);
+      color: var(--color-charcoal);
+      font-family: var(--font-accent);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      padding: 3px 14px;
+      line-height: 1.6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-pc video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== レスポンシブ(自動段組み+560px調整 ※work.cssと統一) ===== */
+    @media (max-width: 560px) {
+      .grid4 { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; margin-bottom: 48px; }
+      .url-line a { font-size: 13.5px; }
+      .mock-bar { padding: 9px 12px; }
+      table.spec th, table.spec td { display: block; width: 100%; border-top: none; }
+      table.spec tr:first-child th { border-top: 1px solid var(--color-charcoal); }
+      .hero p.lead { font-size: 15px; }
+      .step .step-num { font-size: 26px; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="inner">
+        <div class="title-card">
+          <p class="eyebrow">Solution</p>
+          <h1>写真記録付き勤怠管理アプリ</h1>
+        </div>
+
+        <p class="lead">店舗や事務所に置いたタブレット1台で、出勤・退勤を「写真付き」で記録するシステムです。打刻したデータはそのままGoogleスプレッドシートに貯まり、月末には労働時間・残業・深夜勤務・給与概算までを自動で集計します。専用の打刻機も、月額のクラウド契約も必要ありません。</p>
+
+        <figure class="mock-pc" aria-label="ツールの操作デモ動画">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-url">jnishina-co9.github.io/demo-kintai-app</span>
+          </div>
+          <video src="../img/works/sol014/demo.mp4" width="1920" height="1080" autoplay muted loop playsinline controls preload="metadata"></video>
+        </figure>
+      </div>
+    </section>
+
+    <!-- QUICK SUMMARY -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Quick Summary</div>
+        <h2>概要</h2>
+        <div class="about-grid">
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">写真記録付き勤怠管理アプリ</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2026年8月</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Claude Code</p>
+          </div>
+          <div class="about-card about-card--wide">
+            <p class="about-label">URL</p>
+            <p class="url-line"><strong>従業員用</strong> <a href="https://jnishina-co9.github.io/demo-kintai-app/demo-employee.html" target="_blank" rel="noopener">https://jnishina-co9.github.io/demo-kintai-app/demo-employee.html</a></p>
+            <p class="url-line"><strong>管理者用</strong> <a href="https://jnishina-co9.github.io/demo-kintai-app/demo-admin.html" target="_blank" rel="noopener">https://jnishina-co9.github.io/demo-kintai-app/demo-admin.html</a></p>
+          </div>
+          <div class="about-card about-card--black about-card--wide">
+            <p class="about-label">Note</p>
+            <p>本アプリは、導入企業様ご自身のGoogleアカウント内で完結する「導入キット方式」で提供するため、共通の本番URLは存在しません。上記は、実際の画面・操作をご体験いただけるデモ環境です。</p>
+          </div>
+        </div>
+
+        <div class="sec-label en">Specification</div>
+        <h3 class="sub-heading">仕様</h3>
+        <table class="spec">
+          <tbody>
+            <tr>
+              <th>技術スタック</th>
+              <td>
+                <div class="chips">
+                  <span class="chip">Google Apps Script</span>
+                  <span class="chip">Googleスプレッドシート</span>
+                  <span class="chip">Googleドライブ</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>動作環境</th>
+              <td>タブレット・スマートフォンのブラウザ(Android／iPadOS)。常時インターネット接続が必要。専用サーバー・外部APIは不使用</td>
+            </tr>
+            <tr>
+              <th>制約・スコープ外</th>
+              <td>残業判定は1日8時間超のみ対応(週40時間超・休日祝日・月60時間超の割増率は非対応)/締め日は月末固定(15日締めなど非対応)/位置情報による打刻制限なし(写真での事後確認により代替)/支給額は概算のみ(社会保険料・税・手当は含まず、社会保険労務士による確認を推奨)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONCEPT -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Concept</div>
+        <h2>打刻はワンタップ、集計はゼロ作業に</h2>
+        <p class="concept-copy">出勤・退勤のたびに写真を残すから、代理打刻の不安がありません。<span class="black">労働時間・残業・深夜勤務・給与概算までを自動で集計</span>し、月末のExcel転記作業をなくします。専用機器も月額費用も不要です。</p>
+        <div class="grid4">
+          <div class="cell">
+            <span class="num en">01</span>
+            <h3>費用がかからない</h3>
+            <p>初期費用ゼロ・月額利用料ゼロ。お手持ちのタブレットとGoogleアカウントだけで動作します。従業員が増えても追加費用はかかりません。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">02</span>
+            <h3>代理打刻を防止</h3>
+            <p>打刻のたびに写真を撮影して記録。「本当に本人が押したか」を、あとから写真で確認できます。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">03</span>
+            <h3>集計は自動化</h3>
+            <p>労働時間・残業・深夜勤務を自動計算し、給与概算まで一括で出力。月末のExcel転記作業がなくなります。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">04</span>
+            <h3>データはお客様の手元に</h3>
+            <p>記録はすべてお客様ご自身のGoogleスプレッドシートに保存されます。開発者がデータを預かることは一切ありません。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">Features</div>
+        <h2>主な機能</h2>
+        <div class="feat">
+          <div>
+            <h3><span class="fnum en">1</span>4つの打刻ボタン</h3>
+            <p>出勤・退勤・休憩に入る・休憩から戻るの4種類。大きなボタンをタップするだけで、文字入力は一切不要です。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">2</span>部門→氏名で選択</h3>
+            <p>部門を選んでから氏名をタップするだけ。部門が1つしかない場合は、部門選択の画面を自動でスキップします。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">3</span>撮影して自動送信</h3>
+            <p>端末標準のカメラアプリを起動して撮影。確定と同時に自動送信され、写真はGoogleドライブの年月フォルダへ、記録は打刻ログに1行として追記されます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">4</span>本日の状況をひと目で確認</h3>
+            <p>出勤者・未出勤者を一覧表示。打刻時に撮影された写真もその場で確認できます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">5</span>打刻の修正もあとから安全に</h3>
+            <p>押し忘れ・押し間違いは時刻変更・取消・追加で対応。元の記録は消さず「取消」マークを付けて新しい行を追記するため、あとから改ざんできません。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">6</span>ボタンひとつで月次集計</h3>
+            <p>個別の月間勤怠表も、全員分の月次サマリーも自動生成。給与ソフトへの入力にそのまま使える形で出力されます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Flow</div>
+        <h2>処理の流れは6ステップ</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num en">01</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Clock-in</span>
+              <h3>専用URLから起動</h3>
+              <p>従業員がホーム画面のURLをタップ。URLに埋め込まれたアクセスキーで自動認証されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">02</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Clock-in</span>
+              <h3>種類→部門→氏名を選ぶ</h3>
+              <p>出勤・退勤など4択をタップし、部門・氏名の順に選択。部門が1つなら選択画面は省略されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">03</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Clock-in</span>
+              <h3>撮影して自動送信</h3>
+              <p>カメラアプリで撮影し、確定と同時に自動送信。写真はドライブへ、記録はシートへ即座に保存されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">04</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Month-end</span>
+              <h3>打刻を組み合わせる</h3>
+              <p>1か月分の出勤・退勤、休憩の出入りを日付ごとにペアリング。組み合わせが揃わない日には「要確認」マークを表示します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">05</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Month-end</span>
+              <h3>日次の勤務時間を計算</h3>
+              <p>拘束時間・休憩控除・実働・残業・深夜時間を算出し、「YYYY年MM月」シートに書き出します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">06</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <span class="step-phase en">Month-end</span>
+              <h3>月次サマリーを生成</h3>
+              <p>全従業員分の出勤日数・実働・残業・深夜・支給概算を1行1名でまとめ、給与ソフトへそのまま入力できる形に出力します。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- UI/UX -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">UI / UX</div>
+        <h2>使いやすさの工夫</h2>
+        <div class="why">
+          <div>
+            <h3>シンプルな操作フロー</h3>
+            <p>「画面の文字どおりに押してください」だけで、初めての従業員でも迷わず打刻できます。マニュアルは不要です。</p>
+          </div>
+          <div>
+            <h3>指1本分の大きなボタン</h3>
+            <p>押し間違いを防ぐ大きさに設計。退勤と休憩の押し間違いが減り、管理者の修正の手間も減らせます。</p>
+          </div>
+          <div>
+            <h3>次画面の先読み込み</h3>
+            <p>ボタンを押した瞬間に次の画面のデータを読み込み開始。通信待ちを感じさせないスピード感で操作できます。</p>
+          </div>
+          <div>
+            <h3>エラーは原因と対処法をセットで表示</h3>
+            <p>「何が起きたか」「どうすればいいか」を画面内にそのまま表示。専門用語を避け、誰でも自己解決できます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Links</div>
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta" href="https://jnishina-co9.github.io/demo-kintai-app/demo-employee.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">TRY IT</span>打刻画面を使ってみる(従業員用)</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://jnishina-co9.github.io/demo-kintai-app/demo-admin.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">TRY IT</span>管理画面を使ってみる(管理者用)</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://jnishina-co9.github.io/demo-kintai-app/spec.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">SPEC</span>仕様書を見る(機能の詳細)</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://jnishina-co9.github.io/demo-kintai-app/requirements.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">DOCS</span>要件定義書を見る(開発者向け)</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなツールが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

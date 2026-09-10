@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>無機質な仕様書を、AIで『誰でも読めるHTML』に変える仕組みづくり | 深森呼吸</title>
+  <meta name="description" content="MarkdownテンプレートとAI変換指示書をセットにした、プロダクト仕様書のHTML自動生成システムの紹介と仕様。AIに一言お願いするだけで、内容の書き起こしからデザインの整ったHTML化までを仕上げてくれます。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&family=Outfit:wght@400;600;700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* ============================================================
+       SOLUTIONテンプレ(仕様書兼作品紹介・スライド型)
+       - 背景は白で統一
+       - このテンプレは直角基調(角丸はBACKピルとデモ動画ブラウザ枠のみ)
+       ============================================================ */
+
+    body {
+      line-height: 1.8;
+    }
+
+    .en {
+      font-family: var(--font-accent);
+      letter-spacing: 0.12em;
+    }
+
+    /* section.slab / .hero / .inner の幅・paddingはwork.cssで共通定義 */
+
+    .slab--white { background: var(--color-white); }
+
+    /* セクション見出し共通(アクセントラベル+大見出し)
+       ※CTAボタン内の .label(work.css)と衝突しないよう .sec-label にする */
+    .sec-label {
+      font-family: var(--font-accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-black);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+    .slab h2 {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 40px;
+    }
+
+    /* Quick Summary内の副見出し(Specification等、独立セクションほどの重みは持たせない) */
+    .sub-heading {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin: 0 0 20px;
+    }
+
+    /* ===== HERO(タイトルカード → リード文 → デモ動画) =====
+       タイトルは他テンプレ共通の .title-card(work.css:アクセント背景×白文字)をそのまま使う
+       (--radius:0 のためこのカードも直角になり、直角基調と矛盾しない) */
+    .hero p.lead {
+      font-size: 17px;
+      margin: 0 0 64px;
+    }
+
+    /* ===== Quick Summary(Project/Date/Tool/URLのベントーカード。
+       web008-line-tools.htmlのabout-gridから4項目のみ流用。
+       カードは直角基調(--radius:0)のまま、ホバーの傾きだけcre-と同じにする) ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 96px; /* スラブ内の次見出しとの境界もスラブ間と同じ96pxに揃える */
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .url-line {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .url-line a {
+      font-family: var(--font-accent);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 4px;
+    }
+
+    .url-line a:hover {
+      text-decoration: none;
+    }
+
+    /* ===== Concept(コンセプトコピー+4セルグリッド) ===== */
+    .concept-copy {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.9;
+      margin: 0 0 40px;
+    }
+    .black { color: var(--color-black); }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2行2列で固定(バランス優先) */
+      border-top: 1px solid var(--color-charcoal);
+      border-left: 1px solid var(--color-charcoal);
+    }
+    .grid4 .cell {
+      border-right: 1px solid var(--color-charcoal);
+      border-bottom: 1px solid var(--color-charcoal);
+      padding: 32px 26px;
+    }
+    .grid4 .num {
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 30px;
+      color: var(--color-black);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .grid4 h3 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+    .grid4 p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Features(番号付き見出し+説明) ===== */
+    .feat {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+    }
+    .feat h3 {
+      font-size: 18px;
+      font-weight: 700;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--color-charcoal);
+      margin: 0 0 16px;
+    }
+    .feat h3 .fnum {
+      font-family: var(--font-accent);
+      color: var(--color-black);
+      font-weight: 800;
+      margin-right: 10px;
+    }
+    .feat p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Flow(縦ライン+単一列。マーカーはホバーで四角→ひし形に回転) ===== */
+    .steps {
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .steps::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 68px;
+      width: 1px;
+      background: var(--divider-strong);
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 24px 1fr;
+      align-items: start;
+      padding-bottom: 48px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step .step-num {
+      grid-column: 1;
+      font-family: var(--font-accent);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--color-black);
+      padding-top: 2px;
+    }
+    .step .step-marker {
+      position: absolute;
+      top: 9px;
+      left: 63px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-charcoal);
+      transform: rotate(0deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+    }
+    .step:hover .step-marker {
+      transform: rotate(45deg) scale(1.8);
+      background: var(--color-black);
+    }
+    .step .step-content {
+      grid-column: 3;
+      padding-left: 4px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .step:hover .step-content {
+      transform: translate(10px, -6px);
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+    .step p { font-size: 15.5px; margin: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .step-marker, .step-content { transition: none; }
+    }
+
+    /* ===== UI/UX(縦線リスト) ===== */
+    .why {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    .why > div { border-left: 4px solid var(--color-black); padding-left: 22px; }
+    .why h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+    .why p { font-size: 15.5px; margin: 0; }
+
+    /* ===== 基本情報テーブル(概要セクションに統合) ===== */
+    table.spec {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-white);
+    }
+    table.spec th, table.spec td {
+      border: 1px solid var(--color-charcoal);
+      padding: 15px 20px;
+      font-size: 15.5px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.spec th {
+      background: var(--color-bg);
+      font-weight: 700;
+      width: 26%;
+      white-space: nowrap;
+    }
+    /* このテンプレのチップは直角 */
+    table.spec .chip { border-radius: 0; }
+
+    /* ===== おわりに+リンク ===== */
+    .slab .link-list { max-width: 460px; }
+    /* このテンプレのCTAボタンは直角 */
+    .slab .cta { border-radius: 0; }
+
+    /* ===== デモ動画(ウェブサイト型と同デザイン・同幅で統一) =====
+       ※このテンプレは直角基調だが、ブラウザ枠だけは
+         ウェブサイト型ページ(web008-line-tools.html)と同じ角丸+影+全幅で統一 */
+    .mock-pc {
+      margin: 0; /* figureのUAマージン打ち消し(次スラブとの96pxはheroのpaddingが担う) */
+      width: 100%;
+      background: var(--color-white);
+      border-radius: 20px; /* サイト直角化後もブラウザ枠のみ角丸を維持 */
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(26, 26, 26, 0.10), 0 10px 28px rgba(26, 26, 26, 0.14);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--color-bg);
+    }
+
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+
+    .mock-dot:nth-child(1) { background: var(--color-black); }
+    .mock-dot:nth-child(2) { background: var(--color-charcoal); }
+
+    .mock-url {
+      margin-left: 8px;
+      background: var(--color-bg);
+      color: var(--color-charcoal);
+      font-family: var(--font-accent);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      padding: 3px 14px;
+      line-height: 1.6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-pc video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== レスポンシブ(自動段組み+560px調整 ※work.cssと統一) ===== */
+    @media (max-width: 560px) {
+      .grid4 { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; margin-bottom: 48px; }
+      .url-line a { font-size: 13.5px; }
+      .mock-bar { padding: 9px 12px; }
+      table.spec th, table.spec td { display: block; width: 100%; border-top: none; }
+      table.spec tr:first-child th { border-top: 1px solid var(--color-charcoal); }
+      .hero p.lead { font-size: 15px; }
+      .step .step-num { font-size: 26px; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="inner">
+        <div class="title-card">
+          <p class="eyebrow">Solution</p>
+          <h1>無機質な仕様書を、AIで『誰でも読めるHTML』に変える仕組みづくり</h1>
+        </div>
+
+        <p class="lead">自作ツールを作るたびに、内容だけでなく見た目まで毎回デザインし直すのは、思いのほか手間のかかる作業でした。そこで、「Markdownテンプレート」と「HTML変換指示書」をあらかじめセットで用意し、AIに渡すだけで見やすい仕様書ページが自動生成される仕組みを作りました。これにより、作る人はプロンプト一つで完結でき、読む人にとっても分かりやすい仕様書を実現しています。</p>
+
+        <figure class="mock-pc" aria-label="生成された仕様書ページの操作デモ動画">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-url">jnishina-co9.github.io/product-spec/index.html</span>
+          </div>
+          <video src="../img/works/sol011/demo.mp4" width="1920" height="1080" autoplay muted loop playsinline controls preload="metadata"></video>
+        </figure>
+      </div>
+    </section>
+
+    <!-- QUICK SUMMARY -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Quick Summary</div>
+        <h2>概要</h2>
+        <div class="about-grid">
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">無機質な仕様書を、AIで『誰でも読めるHTML』に変える仕組みづくり</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2026年5月</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Google Antigravity IDE</p>
+          </div>
+          <div class="about-card about-card--wide">
+            <p class="about-label">URL</p>
+            <p class="url-line"><a href="https://jnishina-co9.github.io/product-spec/index.html" target="_blank" rel="noopener">https://jnishina-co9.github.io/product-spec/index.html</a></p>
+          </div>
+        </div>
+
+        <div class="sec-label en">Specification</div>
+        <h3 class="sub-heading">仕様</h3>
+        <table class="spec">
+          <tbody>
+            <tr>
+              <th>技術スタック</th>
+              <td>
+                <div class="chips">
+                  <span class="chip">HTML / CSS / JavaScript</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>動作環境</th>
+              <td>生成AI(Claude、ChatGPT、Antigravityなどのチャット・AIツール)にMarkdownファイルを読み込ませ、HTML変換を依頼できる環境。完成したHTMLはモダンブラウザ(Chrome・Edgeなどの新しいブラウザ)で動作し、インストールは不要</td>
+            </tr>
+            <tr>
+              <th>制約・スコープ外</th>
+              <td>バックエンド(サーバー側の処理)やデータベースは持たないため、仕様書のデータが外部サーバーへ送信・保存されることはありません</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONCEPT -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Concept</div>
+        <h2>書くのは、ひとこと「仕様書を書いて」だけ。</h2>
+        <p class="concept-copy">AIにこのテンプレートと変換ルールを読み込ませておけば、あとは一言、「書いて」とお願いするだけ。ツールの中身を読み取って文章を書き起こし、配色・文字サイズ・余白まで指示書通りに整えたHTMLへ、<span class="black">一度の会話でそのまま仕上げてくれます。</span></p>
+        <div class="grid4">
+          <div class="cell">
+            <span class="num en">01</span>
+            <h3>テンプレートと指示書を分離</h3>
+            <p>書き起こしのテンプレート(spec.md)とデザインの指示書(spec-html.md)を別ファイルに分けることで、AIが文章とデザインの両方を迷わず進められます。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">02</span>
+            <h3>項目数は自由に増減可能</h3>
+            <p>機能の数や処理フローのステップ数は固定ではありません。アプリの規模に合わせて、AIが柔軟に項目を追加・削除します。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">03</span>
+            <h3>実際のコードから書き起こすから、仕様と実装がズレない</h3>
+            <p>手作業の仕様書はコードの変更に追いつかず古くなりがちですが、AIがそのつどアプリの中身を読み取って書き起こすため、実態と乖離しません。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">04</span>
+            <h3>1ファイル完結・外部送信ゼロ</h3>
+            <p>生成されるHTMLはCSS・JSも1ファイルに埋め込まれた静的ページ。サーバーとのやり取りもデータ送信も発生しません。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">Features</div>
+        <h2>主な機能</h2>
+        <div class="feat">
+          <div>
+            <h3><span class="fnum en">1</span>AIが迷わず書けるMarkdownテンプレート</h3>
+            <p>「基本情報」「主な機能」「処理フロー」など8項目の構成があらかじめ決まっているので、AIに一言頼むだけで抜け漏れのない仕様書に仕上がります。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">2</span>デザインを統一するHTML変換指示書</h3>
+            <p>配色・文字サイズ・余白・レスポンシブ対応まで定義済みの指示書。AIに読み込ませるだけで、毎回同じ品質のデザインに仕上がります。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">3</span>快適に読めるナビゲーション＆アコーディオン</h3>
+            <p>セクションごとに開閉できるアコーディオンに加え、読んでいる位置に合わせてハイライトが動くサイドバー目次、進捗バーとトップへ戻るボタンまで搭載。長い仕様書でも迷わず読み進められます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">4</span>そのまま資料として配れる印刷・PDF出力対応</h3>
+            <p>印刷時はサイドバーや操作ボタンを自動で非表示にし、そのままPDFとして保存できる専用レイアウトに切り替わります。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Flow</div>
+        <h2>処理の流れは3ステップ</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num en">01</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>「仕様書を書いて」とAIに頼む</h3>
+              <p>プロジェクトにspec.mdとspec-html.mdを置き、対象のツールについてAIに一言依頼します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">02</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>AIがコードを解析し、自動でHTML化する</h3>
+              <p>アプリのコード(HTML・JavaScriptなど)を読み取って機能や使用技術を解析し、spec.mdのテンプレートに沿って専門用語には( )付きの解説を添えながら内容を書き起こします。続けてspec-html.mdのデザインルールに従い、1ファイル完結のHTMLに変換します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">03</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>ブラウザで確認・公開する</h3>
+              <p>生成されたHTMLをそのままブラウザで開いて確認。問題なければGitHub Pagesなどにアップロードしてそのまま公開できます。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- UI/UX -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">UI / UX</div>
+        <h2>使いやすさの工夫</h2>
+        <div class="why">
+          <div>
+            <h3>配色は4色に絞り、アクセントは矢印だけに限定</h3>
+            <p>配色はメイン・ベース・サブ・アクセントの4色に固定し、差し色はアコーディオンの矢印だけに限定。誰が生成しても統一感のある見た目に仕上がります。</p>
+          </div>
+          <div>
+            <h3>バグが起きやすい動きは「正解コード」を埋め込み</h3>
+            <p>目次のハイライト表示など不具合の起きやすいJavaScript(動きをつけるプログラム)は、AIに作らせず「正解コード」を指示書に記載。実装のズレをなくし、毎回同じ操作性を実現します。</p>
+          </div>
+          <div>
+            <h3>専門用語には「( )で解説」をつける自動ルール</h3>
+            <p>APIやCDNなどの専門用語には( )で説明を添えるルールを指示書に明記。非エンジニアやクライアントにもすんなり読める仕様書に仕上がります。</p>
+          </div>
+          <div>
+            <h3>配布・共有が一番ラクな「1ファイル完結」設計</h3>
+            <p>デザインもプログラムも1つのHTMLファイルに埋め込む設計。ファイル不足のトラブルがなく、チャットやメールで送ってダブルクリックするだけで誰でもすぐ閲覧できます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Links</div>
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta" href="https://jnishina-co9.github.io/product-spec/index.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">TRY IT</span>サンプルを見る</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://github.com/jnishina-co9/product-spec/blob/main/spec.md" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">TEMPLATE</span>テンプレートの構成を見る</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://github.com/jnishina-co9/product-spec/blob/main/spec-html.md" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">RULES</span>デザイン変換のルールを見る</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://note.com/co9_note/n/nc3b0ab5b14fe" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">NOTE</span>開発の裏側をnoteで読む</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなツールが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

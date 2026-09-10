@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>深森呼吸 | ブランドサイト</title>
+  <meta name="description" content="岡山県を拠点に、業務改善(SOLUTION)とデザイン(CREATION)の両面から事業を支援する深森呼吸のポートフォリオサイトです。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+      <a class="logo" href="./" aria-label="深森呼吸 ホーム">
+        <img class="logo-mark" src="img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+      </a>
+
+      <div class="header-menu">
+        <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="menu-panel" aria-label="カテゴリメニュー">
+          <span class="menu-bar"></span>
+          <span class="menu-bar"></span>
+        </button>
+        <div class="menu-panel" id="menu-panel">
+          <nav class="filter-nav" id="filter-nav" aria-label="カテゴリで絞り込み">
+            <button type="button" class="filter-btn is-active" data-filter="all" aria-pressed="true">ALL</button>
+            <button type="button" class="filter-btn" data-filter="solution" aria-pressed="false">SOLUTION</button>
+            <button type="button" class="filter-btn" data-filter="creation" aria-pressed="false">CREATION</button>
+            <button type="button" class="filter-btn" data-filter="column" aria-pressed="false">COLUMN</button>
+            <button type="button" class="filter-btn" data-filter="about" aria-pressed="false">ABOUT</button>
+          </nav>
+
+          <div class="lang-switch" role="group" aria-label="言語切り替え">
+            <button type="button" class="lang-btn is-active" data-lang="ja" aria-pressed="true"><span class="lang-full">JAPANESE</span><span class="lang-short">JA</span></button>
+            <span class="lang-divider" aria-hidden="true">|</span>
+            <button type="button" class="lang-btn" data-lang="en" aria-pressed="false"><span class="lang-full">ENGLISH</span><span class="lang-short">EN</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="works" aria-label="サービス・実績一覧">
+      <div class="card-grid" id="card-grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="footer-copy"><small data-i18n="footer">&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/theme.js"></script>
+</body>
+</html>

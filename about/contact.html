@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>お問い合わせ | 深森呼吸</title>
+  <meta name="description" content="深森呼吸(co9co9)のポートフォリオサイトのお問い合わせフォームです。お仕事のご相談、作品についてのご質問などお気軽にどうぞ。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <script type="module" src="../js/contact.js"></script>
+  <style>
+    /* このページ固有: フォームのレイアウト(共通部分はwork.cssへ) */
+    .form-card {
+      background: var(--color-white);
+      border-radius: var(--radius);
+      padding: clamp(28px, 5vw, 48px) 0;
+      margin: 0 0 12px;
+    }
+
+    .field {
+      margin-bottom: 22px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 16px;
+    }
+
+    .field label {
+      display: block;
+      font-family: var(--font-accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-charcoal);
+      margin-bottom: 8px;
+    }
+
+    .field .req,
+    .field .opt {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      margin-left: 6px;
+      padding: 2px 7px;
+      border-radius: var(--radius);
+      color: var(--color-white);
+      vertical-align: middle;
+    }
+
+    .field .req {
+      background: var(--color-black);
+    }
+
+    .field .opt {
+      background: var(--color-gray);
+    }
+
+    .field input[type="text"],
+    .field input[type="email"],
+    .field input[type="tel"],
+    .field textarea {
+      width: 100%;
+      font-family: var(--font-jp);
+      font-size: 15.5px;
+      padding: 12px 14px;
+      border: 1px solid var(--color-charcoal);
+      border-radius: var(--radius);
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--color-black);
+      background: var(--color-white);
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 160px;
+      line-height: 1.8;
+    }
+
+    .field-checkbox label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-family: var(--font-jp);
+      font-size: 14.5px;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: normal;
+      color: var(--color-charcoal);
+    }
+
+    .field-checkbox input[type="checkbox"] {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--color-black);
+    }
+
+    .field-checkbox a {
+      color: var(--color-charcoal);
+      font-weight: 700;
+    }
+
+    /* ハニーポット(迷惑送信bot対策): 人の目には見えないが、botは埋めてしまう罠の項目 */
+    .hp-field {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    .submit-note {
+      font-size: 14px;
+      color: var(--color-charcoal);
+      margin: 64px 0 12px;
+    }
+
+    button.cta {
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-jp);
+    }
+
+    /* button.cta の border:none がwork.cssの.cta--white枠線より詳細度が高く上書きしてしまうため、再指定 */
+    button.cta--white {
+      border: 1px solid var(--color-charcoal);
+    }
+
+    button.cta:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .form-status {
+      min-height: 1.6em;
+      font-size: 14.5px;
+      font-weight: 700;
+      margin: 16px 0 0;
+    }
+
+    .form-status[data-state="success"] {
+      color: var(--color-charcoal);
+    }
+
+    .form-status[data-state="error"] {
+      color: var(--color-black);
+    }
+
+    /* 確認ビュー */
+    .confirm-list {
+      margin: 0;
+    }
+
+    .confirm-item {
+      margin-bottom: 22px;
+    }
+
+    .confirm-item dt {
+      font-family: var(--font-accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-charcoal);
+      margin-bottom: 8px;
+    }
+
+    .confirm-item dd {
+      margin: 0;
+      font-family: var(--font-jp);
+      font-size: 15.5px;
+      color: var(--color-charcoal);
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .confirm-actions {
+      margin-top: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+    <article class="work-article">
+      <section class="title-card">
+        <p class="eyebrow">Contact</p>
+        <h1>お問い合わせ</h1>
+      </section>
+
+      <p class="work-lead">深森呼吸にご関心をお寄せいただき、誠にありがとうございます。<br>お仕事のご依頼やご相談など、どうぞお気軽にお問い合わせください。</p>
+
+      <form id="contact-form" class="form-card" novalidate>
+        <div id="view-input" class="form-view">
+          <div class="field field-row">
+            <div class="field">
+              <label for="last-name">姓<span class="req">必須</span></label>
+              <input type="text" id="last-name" name="lastName" autocomplete="family-name" required>
+            </div>
+            <div class="field">
+              <label for="first-name">名<span class="req">必須</span></label>
+              <input type="text" id="first-name" name="firstName" autocomplete="given-name" required>
+            </div>
+          </div>
+
+          <div class="field field-row">
+            <div class="field">
+              <label for="last-name-kana">セイ<span class="req">必須</span></label>
+              <input type="text" id="last-name-kana" name="lastNameKana" autocomplete="off" required>
+            </div>
+            <div class="field">
+              <label for="first-name-kana">メイ<span class="req">必須</span></label>
+              <input type="text" id="first-name-kana" name="firstNameKana" autocomplete="off" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">メールアドレス<span class="req">必須</span></label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+          </div>
+
+          <div class="field">
+            <label for="company">会社名・団体名・屋号<span class="opt">任意</span></label>
+            <input type="text" id="company" name="company" autocomplete="organization">
+          </div>
+
+          <div class="field">
+            <label for="phone">電話番号<span class="opt">任意</span></label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel">
+          </div>
+
+          <div class="field">
+            <label for="message">お問い合わせ内容<span class="req">必須</span></label>
+            <textarea id="message" name="message" rows="7" required></textarea>
+          </div>
+
+          <div class="field hp-field" aria-hidden="true">
+            <label for="website">ウェブサイト</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="field field-checkbox">
+            <label>
+              <input type="checkbox" id="agree" name="agree" required>
+              <span><a href="privacypolicy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意して送信する<span class="req">必須</span></span>
+            </label>
+          </div>
+
+          <p class="submit-note">入力内容をご確認いただく画面に進みます。</p>
+
+          <div class="link-list">
+            <button type="button" id="to-confirm-btn" class="cta">
+              <span class="label">内容を確認する</span>
+              <span class="circle" aria-hidden="true">&#8594;</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="view-confirm" class="form-view" hidden>
+          <dl class="confirm-list">
+            <div class="confirm-item">
+              <dt>お名前</dt>
+              <dd id="confirm-name"></dd>
+            </div>
+            <div class="confirm-item">
+              <dt>フリガナ</dt>
+              <dd id="confirm-kana"></dd>
+            </div>
+            <div class="confirm-item">
+              <dt>メールアドレス</dt>
+              <dd id="confirm-email"></dd>
+            </div>
+            <div class="confirm-item">
+              <dt>会社名・団体名・屋号</dt>
+              <dd id="confirm-company"></dd>
+            </div>
+            <div class="confirm-item">
+              <dt>電話番号</dt>
+              <dd id="confirm-phone"></dd>
+            </div>
+            <div class="confirm-item">
+              <dt>お問い合わせ内容</dt>
+              <dd id="confirm-message"></dd>
+            </div>
+          </dl>
+
+          <p class="submit-note">内容をご確認のうえ、送信してください。</p>
+
+          <div class="link-list confirm-actions">
+            <button type="button" id="back-to-input-btn" class="cta cta--white">
+              <span class="circle" aria-hidden="true">&#8592;</span>
+              <span class="label">内容を修正する</span>
+            </button>
+            <button type="submit" class="cta">
+              <span class="label">この内容で送信する</span>
+              <span class="circle" aria-hidden="true">&#8594;</span>
+            </button>
+          </div>
+        </div>
+
+        <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </article>
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

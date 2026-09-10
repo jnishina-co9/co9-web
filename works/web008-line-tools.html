@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>LINEスタンプ制作応援ツール ポータルサイト | 深森呼吸</title>
+  <meta name="description" content="LINEスタンプ制作を応援する4つの無料Webツールをまとめたポータルサイトの紹介ページ。1ページ完結・ライブラリ不使用で、どの環境でも軽快に動作します。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* ============================================
+       このページ固有のスタイル(共通部分はwork.cssへ)
+       ============================================ */
+
+    /* ---- セクション見出し(SOLUTIONと揃える)
+       work.cssの.summary-title/.links h2(縦線+太字)を
+       このページだけ上書きし、英語キャプション+大見出しに変更する ---- */
+    .sec-label {
+      font-family: var(--font-accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-black);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+
+    .summary-title,
+    .links h2 {
+      border-left: none;
+      padding-left: 0;
+      letter-spacing: normal;
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 40px;
+    }
+
+    /* セクション間の余白: 全テンプレ統一の96px(スマホ48px)。
+       前要素の下マージンとはマージン相殺で重なるため、境界は常に96pxになる */
+    .about,
+    .links {
+      margin-top: 96px;
+    }
+
+    /* ---- ヒーローモックアップ(PC動画) ---- */
+    .mock-pc {
+      margin: 0;
+      width: 100%;
+      background: var(--color-white);
+      border-radius: 20px; /* サイト直角化後もブラウザ枠のみ角丸を維持 */
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(26, 26, 26, 0.10), 0 10px 28px rgba(26, 26, 26, 0.14);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--color-bg);
+    }
+
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+
+    .mock-dot:nth-child(1) { background: var(--color-black); }
+    .mock-dot:nth-child(2) { background: var(--color-charcoal); }
+
+    .mock-url {
+      margin-left: 8px;
+      background: var(--color-bg);
+      color: var(--color-charcoal);
+      font-family: var(--font-accent);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      padding: 3px 14px;
+      line-height: 1.6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-pc video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ---- この作品について(ベントーグリッド) ---- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ホバーで大胆に傾く(奇数カードは左、偶数カードは右へ) */
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-card--black {
+      background: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .about-card--outline {
+      border: 1px solid var(--color-charcoal);
+      margin-top: 14px;
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card--black .about-label {
+      color: var(--color-white);
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    /* 作品タイトル(PROJECT) */
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    /* URL(改行させず1行で見せる) */
+    .url-line {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .url-line a {
+      font-family: var(--font-accent);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 4px;
+    }
+
+    .url-line a:hover {
+      text-decoration: none;
+    }
+
+    /* ---- レスポンシブ ---- */
+    @media (max-width: 560px) {
+      .about,
+      .links {
+        margin-top: 48px;
+      }
+
+      .mock-bar {
+        padding: 9px 12px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .url-line a {
+        font-size: 13.5px;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+    <article class="work-article">
+      <section class="title-card">
+        <p class="eyebrow">Website</p>
+        <h1>LINEスタンプ制作応援ツール ポータルサイト</h1>
+      </section>
+
+      <p class="work-lead">「LINEスタンプを作りたいけど、背景透過や画像の分割、リサイズが面倒…」。そんな制作時のつまずきを解消するために開発した4つのWebツールを、1ページにまとめて紹介するポータルサイトを制作しました。デモ動画とスクロール連動ナビで、各ツールの魅力が直感的に伝わる構成です。</p>
+
+      <section class="hero-mockup" aria-label="サイトの画面イメージ">
+        <figure class="mock-pc">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-url">jnishina-co9.github.io/line-tools</span>
+          </div>
+          <video src="../img/works/web008/kv.mp4" poster="../img/works/web008/kv.webp" width="1920" height="1080" autoplay muted loop playsinline aria-label="LINEスタンプ制作応援ポータルのパソコン画面スクロールデモ"></video>
+        </figure>
+      </section>
+
+      <section class="about" aria-label="この作品について">
+        <p class="sec-label">About</p>
+        <h2 class="summary-title">この作品について</h2>
+        <div class="about-grid">
+
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">LINEスタンプ制作応援ツール ポータルサイト</p>
+          </div>
+
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2026年6月</p>
+          </div>
+
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Google Antigravity IDE</p>
+          </div>
+
+          <div class="about-card about-card--wide">
+            <p class="about-label">URL</p>
+            <p class="url-line"><a href="https://jnishina-co9.github.io/line-tools/" target="_blank" rel="noopener">https://jnishina-co9.github.io/line-tools/</a></p>
+          </div>
+
+          <div class="about-card about-card--black about-card--wide">
+            <p class="about-label">Target &amp; Purpose</p>
+            <p>ターゲットは、LINEスタンプを作ってみたい方や画像編集に慣れていない方。背景透過・分割・リサイズといった面倒な下準備で挫折しないよう、必要なツールに迷わずたどり着ける入口を1ページに集約しました。</p>
+          </div>
+
+          <div class="about-card about-card--wide about-card--outline">
+            <p class="about-label">Design Concept</p>
+            <p>白×エメラルドグリーン×グレーの3色ミニマリズムで、4つのツールと統一感のあるブランド体験に。大きなセクション番号とスクロール連動ナビで現在地がひと目でわかり、自動再生のデモ動画によって「説明を読まなくても使い方が伝わる」構成にしています。</p>
+          </div>
+
+        </div>
+      </section><!-- /.about -->
+
+      <section class="links">
+        <p class="sec-label">Links</p>
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta" href="https://jnishina-co9.github.io/line-tools/" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">VISIT</span>サイトを実際に見てみる</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://jnishina-co9.github.io/line-tools/spec.html" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">SPEC</span>仕様書を見る(機能の詳細)</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta" href="https://note.com/co9_note/n/n1a2ebd85f453" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">NOTE</span>開発の裏側をnoteで読む</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなサイトが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

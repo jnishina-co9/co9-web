@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>AppSheet制作事例 #02『営業管理アプリ』 | 深森呼吸</title>
+  <meta name="description" content="Google AppSheetで開発した営業管理アプリ(CRM)の紹介と仕様。顧客情報の一元管理とワンタップ操作、データの信頼性確保を両立。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&family=Outfit:wght@400;600;700;800&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* ============================================================
+       SOLUTIONテンプレ(仕様書兼作品紹介・スライド型)
+       - 背景は白で統一
+       - このテンプレは直角基調(角丸はBACKピルとデモ動画ブラウザ枠のみ)
+       ============================================================ */
+
+    body {
+      line-height: 1.8;
+    }
+
+    .en {
+      font-family: var(--font-accent);
+      letter-spacing: 0.12em;
+    }
+
+    /* section.slab / .hero / .inner の幅・paddingはwork.cssで共通定義 */
+
+    .slab--white { background: var(--color-white); }
+
+    /* セクション見出し共通(アクセントラベル+大見出し)
+       ※CTAボタン内の .label(work.css)と衝突しないよう .sec-label にする */
+    .sec-label {
+      font-family: var(--font-accent);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: var(--color-black);
+      text-transform: uppercase;
+      margin: 0 0 14px;
+    }
+    .slab h2 {
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1.4;
+      margin: 0 0 40px;
+    }
+
+    /* Quick Summary内の副見出し(Specification等、独立セクションほどの重みは持たせない) */
+    .sub-heading {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin: 0 0 20px;
+    }
+
+    /* ===== HERO(タイトルカード → リード文 → デモ動画) ===== */
+    .hero p.lead {
+      font-size: 17px;
+      margin: 0 0 64px;
+    }
+
+    /* ===== Quick Summary(Project/Date/Tool/URLのベントーカード) ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 96px; /* スラブ内の次見出しとの境界もスラブ間と同じ96pxに揃える */
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .url-line {
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+
+    .url-line a {
+      font-family: var(--font-accent);
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--color-charcoal);
+      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 4px;
+    }
+
+    .url-line a:hover {
+      text-decoration: none;
+    }
+
+    /* ===== Concept(コンセプトコピー+4セルグリッド) ===== */
+    .concept-copy {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.9;
+      margin: 0 0 40px;
+    }
+    .black { color: var(--color-black); }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* 2行2列で固定(バランス優先) */
+      border-top: 1px solid var(--color-charcoal);
+      border-left: 1px solid var(--color-charcoal);
+    }
+    .grid4 .cell {
+      border-right: 1px solid var(--color-charcoal);
+      border-bottom: 1px solid var(--color-charcoal);
+      padding: 32px 26px;
+    }
+    .grid4 .num {
+      font-family: var(--font-accent);
+      font-weight: 800;
+      font-size: 30px;
+      color: var(--color-black);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .grid4 h3 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+    .grid4 p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Features(番号付き見出し+説明) ===== */
+    .feat {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+    }
+    .feat h3 {
+      font-size: 18px;
+      font-weight: 700;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--color-charcoal);
+      margin: 0 0 16px;
+    }
+    .feat h3 .fnum {
+      font-family: var(--font-accent);
+      color: var(--color-black);
+      font-weight: 800;
+      margin-right: 10px;
+    }
+    .feat p { font-size: 15.5px; margin: 0; }
+
+    /* ===== Flow(縦ライン+単一列。マーカーはホバーで四角→ひし形に回転) ===== */
+    .steps {
+      position: relative;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .steps::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      left: 68px;
+      width: 1px;
+      background: var(--divider-strong);
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 24px 1fr;
+      align-items: start;
+      padding-bottom: 48px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step .step-num {
+      grid-column: 1;
+      font-family: var(--font-accent);
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--color-black);
+      padding-top: 2px;
+    }
+    .step .step-marker {
+      position: absolute;
+      top: 9px;
+      left: 63px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-charcoal);
+      transform: rotate(0deg);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease;
+    }
+    .step:hover .step-marker {
+      transform: rotate(45deg) scale(1.8);
+      background: var(--color-black);
+    }
+    .step .step-content {
+      grid-column: 3;
+      padding-left: 4px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .step:hover .step-content {
+      transform: translate(10px, -6px);
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin: 0 0 12px; }
+    .step p { font-size: 15.5px; margin: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .step-marker, .step-content { transition: none; }
+    }
+
+    /* ===== UI/UX(縦線リスト) ===== */
+    .why {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+    }
+    .why > div { border-left: 4px solid var(--color-black); padding-left: 22px; }
+    .why h3 { font-size: 17px; font-weight: 700; margin: 0 0 8px; }
+    .why p { font-size: 15.5px; margin: 0; }
+
+    /* ===== 基本情報テーブル(概要セクションに統合) ===== */
+    table.spec {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-white);
+    }
+    table.spec th, table.spec td {
+      border: 1px solid var(--color-charcoal);
+      padding: 15px 20px;
+      font-size: 15.5px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.spec th {
+      background: var(--color-bg);
+      font-weight: 700;
+      width: 26%;
+      white-space: nowrap;
+    }
+    /* 技術スタック(役割:ツール名の一覧) */
+    .tech-stack {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .tech-stack li { font-size: 15.5px; }
+    .tech-stack strong {
+      color: var(--color-black);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    /* ===== おわりに+リンク ===== */
+    .slab .link-list { max-width: 460px; }
+    /* このテンプレのCTAボタンは直角 */
+    .slab .cta { border-radius: 0; }
+
+    /* ===== デモ動画(ウェブサイト型と同デザイン・同幅で統一) =====
+       ※このテンプレは直角基調だが、ブラウザ枠だけは
+         ウェブサイト型ページ(web008-line-tools.html)と同じ角丸+影+全幅で統一 */
+    .mock-pc {
+      margin: 0; /* figureのUAマージン打ち消し(次スラブとの96pxはheroのpaddingが担う) */
+      width: 100%;
+      background: var(--color-white);
+      border-radius: 20px; /* サイト直角化後もブラウザ枠のみ角丸を維持 */
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(26, 26, 26, 0.10), 0 10px 28px rgba(26, 26, 26, 0.14);
+    }
+
+    .mock-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--color-bg);
+    }
+
+    .mock-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--color-bg);
+    }
+
+    .mock-dot:nth-child(1) { background: var(--color-black); }
+    .mock-dot:nth-child(2) { background: var(--color-charcoal); }
+
+    .mock-url {
+      margin-left: 8px;
+      background: var(--color-bg);
+      color: var(--color-charcoal);
+      font-family: var(--font-accent);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-radius: 999px;
+      padding: 3px 14px;
+      line-height: 1.6;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-pc video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== レスポンシブ(自動段組み+560px調整 ※work.cssと統一) ===== */
+    @media (max-width: 560px) {
+      .grid4 { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; margin-bottom: 48px; }
+      .url-line a { font-size: 13.5px; }
+      .mock-bar { padding: 9px 12px; }
+      table.spec th, table.spec td { display: block; width: 100%; border-top: none; }
+      table.spec tr:first-child th { border-top: 1px solid var(--color-charcoal); }
+      .hero p.lead { font-size: 15px; }
+      .step .step-num { font-size: 26px; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="inner">
+        <div class="title-card">
+          <p class="eyebrow">Solution</p>
+          <h1>AppSheet制作事例 #02『営業管理アプリ』</h1>
+        </div>
+
+        <p class="lead">BtoC向けに、訪問営業や顧客対応を行う現場担当者のためのCRM(顧客関係管理システム)アプリを作成しました。スマホひとつで完結する即応性と、入力データの改ざん・誤削除を防ぐ厳格なルールとの両立を目指して設計・開発しました。</p>
+
+        <figure class="mock-pc" aria-label="ツールの操作デモ動画">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-dot"></span>
+            <span class="mock-url">営業管理アプリ(Google AppSheet)</span>
+          </div>
+          <video src="../img/works/sol002/demo.mp4" width="1920" height="1080" autoplay muted loop playsinline controls preload="metadata"></video>
+        </figure>
+      </div>
+    </section>
+
+    <!-- QUICK SUMMARY -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Quick Summary</div>
+        <h2>概要</h2>
+        <div class="about-grid">
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">AppSheet制作事例 #02『営業管理アプリ』</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2026年1月</p>
+          </div>
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Google AppSheet</p>
+          </div>
+          <div class="about-card about-card--wide">
+            <p class="about-label">URL</p>
+            <p class="url-line">非公開(AppSheetの仕様上、組織内限定公開のため)</p>
+          </div>
+        </div>
+
+        <div class="sec-label en">Specification</div>
+        <h3 class="sub-heading">仕様</h3>
+        <table class="spec">
+          <tbody>
+            <tr>
+              <th>技術スタック</th>
+              <td>
+                <ul class="tech-stack">
+                  <li><strong>プラットフォーム</strong>Google AppSheet</li>
+                  <li><strong>データベース</strong>Googleスプレッドシート</li>
+                  <li><strong>連携サービス</strong>スマホOS標準の電話・地図アプリ(ディープリンクによる連携)</li>
+                  <li><strong>認証</strong>Googleアカウントのログイン情報</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <th>動作環境</th>
+              <td>スマートフォン(外回りでの入力・確認)、PC(管理・ダッシュボード確認)の両方に対応</td>
+            </tr>
+            <tr>
+              <th>制約・スコープ外</th>
+              <td>Salesforceのような高機能SaaSと比べ、あえて機能を絞ったシンプル設計です。高度な自動分析・レポート機能や、外部CRMとの自動連携は対象外としています。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONCEPT -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Concept</div>
+        <h2>顧客の名前を選ぶだけで、過去のやり取りが一瞬で出てくる、スマホで完結する営業ノート</h2>
+        <p class="concept-copy">地域密着型の店舗・サービス業(美容室、整体、保険代理店など)や外回り中心の営業チームなど、<span class="black">Excel・紙管理には限界を感じつつ、Salesforceのような高額SaaSは「オーバースペック」だと感じる事業者</span>に向けた営業ノートです。</p>
+        <div class="grid4">
+          <div class="cell">
+            <span class="num en">01</span>
+            <h3>顧客情報の一元管理</h3>
+            <p>顧客テーブルと営業履歴テーブルを1対多で紐付け。担当者ごとにバラバラになりがちな対応履歴を、ひとつのデータベースに集約します。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">02</span>
+            <h3>モバイルファースト設計</h3>
+            <p>電話・地図・メールをワンタップで起動。移動中や訪問先でも、スマホひとつで対応が完結します。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">03</span>
+            <h3>データの信頼性確保</h3>
+            <p>初回入力後の編集をブロックし、他人のデータは削除できない仕組みに。「言った言わない」のトラブルを防ぎます。</p>
+          </div>
+          <div class="cell">
+            <span class="num en">04</span>
+            <h3>低コストで導入できる</h3>
+            <p>データベースにはGoogleスプレッドシートを使用。高額な専用SaaSやサーバーを追加契約せず、Google Workspaceの範囲内で運用できます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">Features</div>
+        <h2>主な機能</h2>
+        <div class="feat">
+          <div>
+            <h3><span class="fnum en">1</span>顧客情報の一元管理</h3>
+            <p>顧客テーブル(親)と営業履歴テーブル(子)をReference機能で1対多に連携。顧客を選ぶだけで、紐づく過去の対応履歴が自動で一覧表示されます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">2</span>ワンタップで電話・地図・メールを起動</h3>
+            <p>電話番号や住所の項目をOS標準アプリに直結(ディープリンク)。ボタンひとつで発信や、現在地からのルート案内、メール作成画面を呼び出せます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">3</span>状況に応じた自動絞り込み</h3>
+            <p>ログイン中の担当者や「今月」といった条件で、表示するデータを、Slice機能で自動的にフィルタリング。アプリを開いた瞬間に必要な情報だけが表示されます。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">4</span>編集ロック・削除防止</h3>
+            <p>初回に入力した内容は後から編集できない仕組みに。削除の権限自体も無効化し、他人のデータを誤って操作できないよう制御しています。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">5</span>ダッシュボードによる可視化</h3>
+            <p>ステータス別の円グラフや売上の棒グラフをダッシュボードに表示。グラフを選ぶと他の表示も連動して絞り込まれるクロスフィルタリングにも対応しています。</p>
+          </div>
+          <div>
+            <h3><span class="fnum en">6</span>気の利く自動化</h3>
+            <p>生年月日から年齢を毎日自動計算。ステータスに応じて「対応中」の案件を自動的にリストの上位へ並び替えるなど、細かな気配りを仕組み化しています。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOW -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Flow</div>
+        <h2>使い方は6ステップ</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num en">01</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>顧客検索</h3>
+              <p>顧客リストから名前を選ぶか、新規の顧客をその場で登録します。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">02</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>履歴確認</h3>
+              <p>選んだ顧客に紐づく、過去の対応履歴が自動で表示されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">03</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>アクション実行</h3>
+              <p>電話・地図・メールをワンタップで起動し、その場で接触できます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">04</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>対応記録の入力</h3>
+              <p>訪問や電話の内容を記帳します。初回入力後はロックされ、改ざんはできません。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">05</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>ステータス更新</h3>
+              <p>「対応中」「受注」「失注」など進捗を更新。色分け表示にすぐ反映されます。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num en">06</span>
+            <span class="step-marker" aria-hidden="true"></span>
+            <div class="step-content">
+              <h3>ダッシュボードで確認</h3>
+              <p>売上推移や案件状況をグラフで可視化。次にとるべきアクションを判断できます。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- UI/UX -->
+    <section class="slab">
+      <div class="inner">
+        <div class="sec-label en">UI / UX</div>
+        <h2>使いやすさの工夫</h2>
+        <div class="why">
+          <div>
+            <h3>マニュアル不要の直感的な操作性</h3>
+            <p>迷わず使えることを最優先に設計。初めて触る方でも操作に迷いません。</p>
+          </div>
+          <div>
+            <h3>気の利く自動化</h3>
+            <p>誕生日が来ると年齢が自動更新され、「対応中」の案件は自動的にリスト上位へ。手動でのメンテナンスが要りません。</p>
+          </div>
+          <div>
+            <h3>状況がひと目でわかる色分け表示</h3>
+            <p>「受注」なら青、「失注」なら赤など、条件付き書式で文字を読まなくても状況が判別できます。</p>
+          </div>
+          <div>
+            <h3>完全日本語化</h3>
+            <p>海外製ツール特有の英語表記(Save、Cancel等)をすべて日本語に打ち替え、ITに不慣れな方でも抵抗感なく使えます。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINKS -->
+    <section class="slab slab--white">
+      <div class="inner">
+        <div class="sec-label en">Links</div>
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta" href="https://note.com/co9_note/n/n9c597f7f51ea" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">NOTE</span>開発の裏側をnoteで読む</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなツールが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

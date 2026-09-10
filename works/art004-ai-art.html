@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>Midjourney AI Art #04 | 深森呼吸</title>
+  <meta name="description" content="Midjourneyで制作したAIアートワークの紹介ページ。花に佇む鳥たちという同じ構図・同じプロンプトのまま、5つの異なる画材表現(Art Medium)で描き分けた実験的な作品を掲載しています。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <script type="module" src="../js/lightbox.js"></script>
+  <script type="module" src="../js/shuffle-cards.js"></script>
+  <style>
+    /* ============================================
+       このページ固有のスタイル(共通部分はwork.cssへ)
+       ============================================ */
+
+    /* ---- サムネイルの山型(扇)配置とホバーアニメーション ----
+       (共通部分はwork.css。ここはこのページ固有の配置ロジック)
+       トランプの手札のように、画面のずっと下にある見えない支点を中心と
+       した円弧の上に5枚を並べる。位置はCSSの三角関数(sin/cos)で計算:
+       角度--fan-angleの札は、中央位置から横に「sin(角度)×半径」、
+       縦に「半径 − cos(角度)×半径」だけずれる。
+       ホバー/タップで選ばれた札(is-active)は弧の外側へ--fan-liftぶん
+       せり出し、残りの札は--fan-shiftぶん弧に沿って左右へ逃げる */
+    .shuffle-cards {
+      /* サムネイル自体をこのページだけ縦長(4:5)・やや小さめにする。
+         正方形素材(1024×1024)をobject-fit:coverで左右を控えめにトリミング
+         して縦長カードに見せる(お手本の理想画像=縦長カードが並ぶ構図に
+         寄せるため。work.cssの共通値(240px・正方形)は他ページに影響する
+         ため変更せず、ここで上書きする) */
+      --shuffle-thumb: 180px;
+      /* 扇の半径。サムネイル幅の1.25倍と広めに取り、カード同士の重なりを
+         浅くして1枚ずつがちゃんと見える扇にする */
+      --fan-r: calc(var(--shuffle-thumb) * 1.25);
+      /* 選択札のせり出し量 */
+      --fan-lift-size: calc(var(--shuffle-thumb) * 0.11);
+      /* 山の開閉をややゆっくり見せる(work.cssの550msを上書き) */
+      --shuffle-bounce-duration: 1000ms;
+    }
+
+    .shuffle-thumb {
+      aspect-ratio: 4 / 5;
+    }
+
+    /* 各札の基本角度(中央0度・左右対称)と、動きの初期値。
+       20deg間隔の均等配置(-40/-20/0/20/40deg)。半径を絞った分
+       角度を大きくしても、561px幅(レスポンシブ境界の直後)まで
+       横はみ出しが起きないことを確認済み */
+    .shuffle-card { --fan-shift: 0deg; --fan-lift: 0px; }
+    .shuffle-card:nth-of-type(1) { --fan-base: -40deg; }
+    .shuffle-card:nth-of-type(2) { --fan-base: -20deg; }
+    .shuffle-card:nth-of-type(3) { --fan-base: 0deg; }
+    .shuffle-card:nth-of-type(4) { --fan-base: 20deg; }
+    .shuffle-card:nth-of-type(5) { --fan-base: 40deg; }
+
+    /* 重なり順: 左(バージョン1)が一番奥、右(バージョン5)が一番手前になる
+       よう、見た目の並び順=重なり順に揃える(バラバラに見えないように)。
+       選択中の札はwork.cssのz-index:10が最前面にする */
+    .shuffle-cards .shuffle-card:nth-of-type(1):not(.is-active) { z-index: 1; }
+    .shuffle-cards .shuffle-card:nth-of-type(2):not(.is-active) { z-index: 2; }
+    .shuffle-cards .shuffle-card:nth-of-type(3):not(.is-active) { z-index: 3; }
+    .shuffle-cards .shuffle-card:nth-of-type(4):not(.is-active) { z-index: 4; }
+    .shuffle-cards .shuffle-card:nth-of-type(5):not(.is-active) { z-index: 5; }
+
+    /* 選択された札は弧の外側へせり出す */
+    .shuffle-card.is-active { --fan-lift: var(--fan-lift-size); }
+
+    /* 選択札から見て右側の札は右へ、左側の札は左へ逃げる(隣ほど大きく) */
+    .shuffle-card.is-active + .shuffle-card { --fan-shift: 6deg; }
+    .shuffle-card.is-active + .shuffle-card + .shuffle-card { --fan-shift: 4deg; }
+    .shuffle-card:has(+ .shuffle-card.is-active) { --fan-shift: -6deg; }
+    .shuffle-card:has(+ .shuffle-card + .shuffle-card.is-active) { --fan-shift: -4deg; }
+
+    /* 角度→位置の計算と適用。2つ目のセレクタは、work.cssの
+       「is-activeの札を正面向きに戻す」指定をこのページでだけ打ち消す
+       ためのもの(山型を保ったまませり出させる) */
+    .shuffle-thumb,
+    .shuffle-cards .shuffle-card.is-active .shuffle-thumb {
+      --fan-angle: calc(var(--fan-base, 0deg) + var(--fan-shift));
+      rotate: var(--fan-angle);
+      translate:
+        calc(sin(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)))
+        calc(var(--fan-r) - cos(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)));
+    }
+
+    /* ---- この作品について(簡略版ベントーグリッド) ---- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .about-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 30px) clamp(22px, 4vw, 32px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ホバーで大胆に傾く(奇数カードは左、偶数カードは右へ) */
+    .about-card:hover {
+      transform: translateY(-8px) rotate(-1.6deg) scale(1.02);
+    }
+
+    .about-grid > .about-card:nth-child(even):hover {
+      transform: translateY(-8px) rotate(1.6deg) scale(1.02);
+    }
+
+    .about-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    .about-card--black {
+      background: var(--color-black);
+      color: var(--color-white);
+    }
+
+    .about-label {
+      font-family: var(--font-accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      margin: 0 0 12px;
+    }
+
+    .about-card--black .about-label {
+      color: var(--color-white);
+    }
+
+    .about-card p {
+      margin: 0;
+      font-size: 15.5px;
+      line-height: 1.9;
+    }
+
+    /* 作品タイトル(PROJECT) */
+    .about-card p.project-name {
+      font-size: clamp(17px, 2.6vw, 21px);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    /* セクション間の余白: 全テンプレ統一の96px(スマホ48px)。
+       前要素の下マージンとはマージン相殺で重なるため、境界は常に96pxになる */
+    .about,
+    .links {
+      margin-top: 96px;
+    }
+
+    /* タイトルカード直後、リード文がない分の余白を補う。
+       他ジャンル(リード文あり)のタイトルカード〜メインビジュアル間の
+       実測値(約204px)に合わせている */
+    .shuffle-cards {
+      margin-top: 200px;
+    }
+
+    /* サムネイルの傾きを大きくした分(お手本の3枚版より下へのはみ出しが
+       大きい)、下の大きい画像との間隔をwork.cssの既定(128px)より広げ、
+       余白が詰まって見えないようにする */
+    .shuffle-visual {
+      margin-top: 180px;
+    }
+
+    /* ---- レスポンシブ ---- */
+    @media (max-width: 560px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about,
+      .links {
+        margin-top: 48px;
+      }
+
+      .shuffle-cards {
+        margin-top: 140px;
+        /* デスクトップと同じ比率(180pxベース)でスマホ用に縮小 */
+        --shuffle-thumb: 100px;
+      }
+
+      /* デスクトップと同様、はみ出し分を見込んで広げる(work.cssの
+         既定48pxのままだと詰まって見える) */
+      .shuffle-visual {
+        margin-top: 80px;
+      }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+    <article class="work-article">
+      <section class="title-card">
+        <p class="eyebrow">AI Art</p>
+        <h1>Midjourney AI Art #04</h1>
+      </section>
+
+      <!-- シャッフルカード: js/shuffle-cards.jsでバージョンを切り替え -->
+      <div class="shuffle-cards" role="group" aria-label="バージョンの切り替え">
+
+        <article class="shuffle-card is-active">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン1を表示" aria-pressed="true">
+              <img src="../img/works/art004/01.webp" alt="水色の背景に咲く白とピンクの花々に囲まれ、青い鳥と黄色い鳥が向き合って佇む構図。アクリル画らしい鮮やかな発色" width="1024" height="1024" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art004/01.webp">
+              <img src="../img/works/art004/01.webp" alt="水色の背景に咲く白とピンクの花々に囲まれ、青い鳥と黄色い鳥が向き合って佇む構図。アクリル画らしい鮮やかな発色" width="1024" height="1024" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>Acrylic Painting(アクリル画)。発色の良さを活かした、色彩豊かな一枚。</p>
+          </div>
+        </article>
+
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン2を表示" aria-pressed="false">
+              <img src="../img/works/art004/02.webp" alt="グレーの背景でオレンジと白の花々の上に、青灰色の鳥と橙色の胸をした鳥がとまる構図。輪郭が溶けるような柔らかいグラデーション" width="1024" height="1024" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art004/02.webp">
+              <img src="../img/works/art004/02.webp" alt="グレーの背景でオレンジと白の花々の上に、青灰色の鳥と橙色の胸をした鳥がとまる構図。輪郭が溶けるような柔らかいグラデーション" width="1024" height="1024" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>Airbrush Art(エアブラシ画)。輪郭を溶かすグラデーションが、花束のような柔らかさに。</p>
+          </div>
+        </article>
+
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン3を表示" aria-pressed="false">
+              <img src="../img/works/art004/03.webp" alt="クリーム色の背景にピンクと黄色の花々が咲く中、2羽の青い鳥が向かい合って佇む構図。にじみのある水彩画タッチ" width="1024" height="1024" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art004/03.webp">
+              <img src="../img/works/art004/03.webp" alt="クリーム色の背景にピンクと黄色の花々が咲く中、2羽の青い鳥が向かい合って佇む構図。にじみのある水彩画タッチ" width="1024" height="1024" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>Vintage Watercolor(ヴィンテージ水彩画)。にじみとくすんだ色調で、経年感のある仕上がりに。</p>
+          </div>
+        </article>
+
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン4を表示" aria-pressed="false">
+              <img src="../img/works/art004/04.webp" alt="セピア色の花々を背景に、2羽の鳥が枝にとまる構図。コーヒーの濃淡と線画だけで表現された一枚" width="1024" height="1024" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art004/04.webp">
+              <img src="../img/works/art004/04.webp" alt="セピア色の花々を背景に、2羽の鳥が枝にとまる構図。コーヒーの濃淡と線画だけで表現された一枚" width="1024" height="1024" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>Coffee Painting(コーヒーペイント)。コーヒーの濃淡と線画だけで表現した一枚。</p>
+          </div>
+        </article>
+
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン5を表示" aria-pressed="false">
+              <img src="../img/works/art004/05.webp" alt="黒地に白い花々を背景に、羽を広げて飛ぶ鳥や枝にとまる鳥など複数羽が描かれた構図。木炭画のような力強い陰影のモノクロ表現" width="1024" height="1024" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art004/05.webp">
+              <img src="../img/works/art004/05.webp" alt="黒地に白い花々を背景に、羽を広げて飛ぶ鳥や枝にとまる鳥など複数羽が描かれた構図。木炭画のような力強い陰影のモノクロ表現" width="1024" height="1024" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>Charcoal Drawing(木炭画)。黒の諧調とコントラストが生む、力強い陰影表現。</p>
+          </div>
+        </article>
+
+      </div><!-- /.shuffle-cards -->
+
+      <section class="about" aria-label="この作品について">
+        <h2 class="summary-title">この作品について</h2>
+        <div class="about-grid">
+
+          <div class="about-card about-card--wide">
+            <p class="about-label">Project</p>
+            <p class="project-name">Midjourney AI Art #04</p>
+          </div>
+
+          <div class="about-card">
+            <p class="about-label">Tool</p>
+            <p>Midjourney</p>
+          </div>
+
+          <div class="about-card">
+            <p class="about-label">Date</p>
+            <p>2025年2月</p>
+          </div>
+
+          <div class="about-card about-card--black about-card--wide">
+            <p class="about-label">Design Concept</p>
+            <p>同じ構図・同じプロンプトのまま、表現手段(Art Medium)だけを変えて5パターン生成しました。花とともに佇む鳥たちの姿は共通なのに、画材が変わるだけで色も温度も物語もまるで別の顔に。AIアートが持つ「解釈の幅」を確かめた実験的な一枚です。</p>
+          </div>
+
+        </div>
+      </section><!-- /.about -->
+
+      <section class="links">
+        <h2>もっと詳しく</h2>
+        <div class="link-list">
+          <a class="cta cta--white" href="../about/contact.html">
+            <span class="label"><span class="sub">CONTACT</span>こんなデザインが欲しい、を相談する</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

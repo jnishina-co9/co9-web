@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var t = localStorage.getItem("theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <title>お問い合わせありがとうございます | 深森呼吸</title>
+  <meta name="description" content="お問い合わせを受け付けました。担当者よりご連絡いたしますので、しばらくお待ちください。">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="../css/work.css">
+  <style>
+    /* このページ固有: 本文と戻るボタンの間隔(共通部分はwork.cssへ) */
+    .thanks-note {
+      margin: 0 0 40px;
+    }
+
+    .thanks-note p {
+      font-size: 15.5px;
+      line-height: 2;
+      margin: 0;
+    }
+
+    .thanks-note p + p {
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="work-header">
+    <a class="work-logo" href="../index.html" aria-label="深森呼吸 ホーム">
+      <img src="../img/logo-co9.svg" alt="深森呼吸" width="857" height="336" loading="lazy">
+    </a>
+  </header>
+
+  <a class="totop" href="#top" aria-label="ページの先頭に戻る">
+    <span class="totop-label">TOP</span>
+    <span class="totop-arrow" aria-hidden="true">&#8594;</span>
+  </a>
+
+  <main>
+    <article class="work-article">
+      <section class="title-card">
+        <p class="eyebrow">Contact</p>
+        <h1>お問い合わせありがとうございます</h1>
+      </section>
+
+      <p class="work-lead">お問い合わせを受け付けました。<br>担当者よりご連絡いたしますので、しばらくお待ちください。</p>
+
+      <section class="thanks-note">
+        <p>お問い合わせ完了後、ご入力いただいたメールアドレス宛てに自動返信メールが送信されます。</p>
+        <p>メールが届かない場合は、メールアドレスが誤っているか、迷惑メールフォルダなどに振り分けられている可能性がありますので、ご確認をお願いいたします。</p>
+      </section>
+
+      <div class="link-list">
+        <a class="cta" href="../index.html">
+          <span class="label"><span class="sub">TOP</span>トップページへ戻る</span>
+          <span class="circle" aria-hidden="true">&#8594;</span>
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="work-footer">
+    <p><small>&copy; 2026 深森呼吸 — SHINSHIN KOKYU</small></p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+/* ============================================================
+   深森呼吸 ポートフォリオサイト
+   共通デザイントークン(色・フォント・角丸)
+   style.css / work.css の両方から @import で読み込む、唯一の定義元
+   ============================================================ */
+:root {
+  --color-bg: #ffffff;
+  --color-black: #262626;
+  --color-white: #ffffff;
+  --color-charcoal: #262626;
+  --color-gray: #6b6b6b;
+
+  /* 半透明の重ね色(ヘッダーのぼかし背景・フィルターピルの下地・区切り線2種) */
+  --overlay-tint: rgba(26, 26, 26, 0.07);
+  --divider-soft: rgba(26, 26, 26, 0.14);
+  --divider-strong: rgba(26, 26, 26, 0.28);
+  --header-bg-scrolled: rgba(255, 255, 255, 0.92);
+  /* overlay-tintと同系色の不透明版。スマホの固定メニューパネルなど、
+     背後に何が来ても読みやすさを保ちたい箇所で使う */
+  --overlay-solid: #f0f0f0;
+
+  --font-jp: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Yu Gothic Medium", "Yu Gothic", Meiryo, sans-serif;
+  --font-accent: "Outfit", var(--font-jp);
+  --font-body: "Work Sans", var(--font-jp);
+
+  --radius: 0; /* 直角基調。丸みはピル型ボタン・モックアップ枠のみ */
+
+  /* チェックボックスやスクロールバーなど、ブラウザ標準パーツの明暗を揃える */
+  color-scheme: light;
+}
+
+/* ダークモード: 白黒の配色をそのまま反転して定義。
+   切り替えはjs/theme.jsが<html>にdata-theme属性を付けて行う */
+:root[data-theme="dark"] {
+  --color-bg: #121212;
+  --color-black: #f2f2f2;
+  --color-white: #1e1e1e;
+  --color-charcoal: #f0f0f0;
+  --color-gray: #9c9c9c;
+
+  --overlay-tint: rgba(255, 255, 255, 0.08);
+  --divider-soft: rgba(255, 255, 255, 0.14);
+  --divider-strong: rgba(255, 255, 255, 0.28);
+  --header-bg-scrolled: rgba(18, 18, 18, 0.92);
+  --overlay-solid: #2a2a2a;
+
+  color-scheme: dark;
+}
