@@ -859,6 +859,18 @@ img {
   }
 }
 
+/* ---- 大きめスマホ・小型タブレット縦持ち(600〜767px): 2列に減らす ---- */
+@media (max-width: 767px) and (min-width: 600px) {
+  :root {
+    --cell: min(calc((100vw - 64px) / 2), 282px);
+    --gap: 16px;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(2, var(--cell)); /* 3列→2列 */
+  }
+}
+
 /* ---- タブレット・スマホ(〜1023px): 言語切替は「JA | EN」に短縮 ---- */
 @media (max-width: 1023px) {
   .lang-full {
@@ -870,21 +882,9 @@ img {
   }
 }
 
-/* ---- スマホ(〜767px): 1カラム表示 ---- */
+/* ---- スマホ(〜767px): ヘッダー(ハンバーガーメニュー)のスマホ仕様
+        ※カードの列数は下の2つのブレークポイントで別途指定する ---- */
 @media (max-width: 767px) {
-  .card-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-  }
-
-  .card,
-  .card--wide,
-  .card--tall {
-    grid-column: auto;
-    grid-row: auto;
-    aspect-ratio: 3 / 2;
-  }
-
   /* スマホ: ロゴ左・ハンバーガー右上。タップでフィルター+言語切替のパネルを開閉 */
   .header-inner {
     padding: 16px 20px;
@@ -906,18 +906,23 @@ img {
     pointer-events: auto;
   }
 
-  /* フィルター+言語切替をまとめたパネル(ヘッダー下・右寄せ) */
+  /* フィルター+言語切替をまとめたパネル(ヘッダー下・右寄せ)
+     背景はカード(.card--muted)と同じ--overlay-solidを使うと、
+     COLUMN/ABOUTカードの上に重なった時に境目が消えて見えるため、
+     カードとは別トークン(--color-white)+影で浮いた見た目にする */
   .menu-panel {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 4px;
+    gap: 10px;
     position: absolute;
     top: calc(100% + 2px);
-    right: 12px;
-    padding: 20px 28px;
-    background: var(--overlay-solid);
+    left: 16px;
+    right: 16px;
+    padding: 28px 24px;
+    background: var(--color-white);
     border-radius: var(--radius);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -948,8 +953,8 @@ img {
 
   /* パネル内のボタンは背景なし。選択中以外はPCのホバーと同じ薄さ(0.6)で沈める */
   .filter-btn {
-    font-size: 0.8rem;
-    padding: 14px 18px;
+    font-size: 1rem;
+    padding: 20px 18px;
     text-align: center;
     opacity: 0.6;
   }
@@ -968,26 +973,46 @@ img {
     position: static;
     transform: none;
     justify-content: center;
-    padding: 6px 0;
+    gap: 14px;
+    padding: 10px 0;
   }
 
   .lang-btn {
-    font-size: 0.85rem;
-    padding: 8px 4px;
+    font-size: 1rem;
+    padding: 14px 10px;
   }
 
   .lang-divider {
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
 
-  /* 開いた時にPC用の内側余白(5px)が付かないようにする */
+  /* 開いた時にPC用のスタイル(内側余白・横幅の上限560px)を引き継がないようにする。
+     max-widthを消し忘れるとパネル幅640px超あたりでフィルター一覧だけ560pxに
+     制限されてJA/ENの行より左寄りにずれて見える */
   .site-header.is-menu-open .filter-nav {
     margin: 0;
     padding: 0;
+    max-width: none;
   }
 
   .works {
     padding-bottom: 64px;
+  }
+}
+
+/* ---- スマホ(〜599px): 1列に減らす ---- */
+@media (max-width: 599px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .card,
+  .card--wide,
+  .card--tall {
+    grid-column: auto;
+    grid-row: auto;
+    aspect-ratio: 3 / 2;
   }
 }
 

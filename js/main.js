@@ -254,7 +254,8 @@ onScroll();
 
 // ------------------------------------------------------------
 // 4b. ハンバーガーメニュー(フィルターの開閉)
-//     PC: ホバーで開く(開きっぱなし) / タッチ端末: タップで開閉
+//     PC・スマホともにタップ/クリックでのみ開閉する
+//     (デフォルトではコンテンツのカードを見せたいため、ホバーでの自動表示はしない)
 // ------------------------------------------------------------
 const menuToggle = document.querySelector(".menu-toggle");
 const canHover = window.matchMedia("(hover: hover)");
@@ -270,10 +271,6 @@ function setMenuOpen(open) {
   header.classList.toggle("is-menu-open", open);
   menuToggle.setAttribute("aria-expanded", String(open));
 }
-
-menuToggle.addEventListener("mouseenter", () => {
-  if (canHover.matches) setMenuOpen(true);
-});
 
 menuToggle.addEventListener("click", () => {
   setMenuOpen(!header.classList.contains("is-menu-open"));
