@@ -33,7 +33,7 @@ export const cards = [
     category: "solution",
     size: "s",
     href: "works/sol016-skill-library-ver1.html",
-    ja: { title: "Web制作 ルール＆スキル集" },
+    ja: { title: "Web制作 ルール＆スキル集 ver.1" },
     en: { title: "Web Production Rules & Skill Library" },
   },
   {
