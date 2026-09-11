@@ -223,8 +223,8 @@ export const cards = [
     category: "solution",
     size: "s",
     href: "works/sol011-product-spec.html",
-    ja: { title: "無機質な仕様書を、AIで『誰でも読めるHTML』に変える仕組みづくり" },
-    en: { title: "Turning Bland Spec Docs into HTML Anyone Can Read, with AI" },
+    ja: { title: "プロダクト仕様書 HTML自動生成ツール" },
+    en: { title: "Product Spec HTML Auto-Generation Tool" },
   },
   {
     id: "solution-intro",
