@@ -29,6 +29,35 @@
 
 export const cards = [
   {
+    id: "col007",
+    category: "column",
+    size: "w",
+    href: "https://note.com/co9_note/n/n17fb0b664e42",
+    popup: {
+      intro: [
+        "これまでノーコードのStudioで運用していたポートフォリオサイトを、自作コードとGitHub Pages（無料のサイト公開機能）へ移行した作業記録をまとめました。AIツールの進化をきっかけに、「自分自身の手でコードを実装・管理したい」という思いから挑戦した実体験です。",
+        "「使っていた独自ドメインの移行手順」や「完全無料でお問い合わせフォームを動かす仕組み」など、非エンジニアがつまずきやすいポイントを5つのステップで整理しました。ドメイン代以外は完全無料で本番公開に至るまでの全手順を公開しています。",
+        "続きはnoteの記事でご覧いただけます。",
+      ],
+      links: [
+        {
+          sub: "VISIT",
+          label: "ポートフォリオサイトを見る",
+          href: "https://co9co9.com/",
+          external: true,
+        },
+        {
+          sub: "NOTE",
+          label: "noteで記事を読む",
+          href: "https://note.com/co9_note/n/n17fb0b664e42",
+          external: true,
+        },
+      ],
+    },
+    ja: { title: "StudioからGitHub Pagesへ、独自ドメインを完全無料で移行した5ステップ" },
+    en: { title: "5 Steps to Migrating a Custom Domain from Studio to GitHub Pages for Free" },
+  },
+  {
     id: "sol016",
     category: "solution",
     size: "s",
@@ -78,14 +107,6 @@ export const cards = [
     en: { title: "Photo-Verified Attendance Management App" },
   },
   {
-    id: "web008",
-    category: "creation",
-    size: "t",
-    href: "works/web008-line-tools.html",
-    ja: { title: "LINEスタンプ制作応援ツール ポータルサイト" },
-    en: { title: "LINE Sticker Tools Portal" },
-  },
-  {
     id: "profile",
     category: "about",
     size: "s",
@@ -93,6 +114,14 @@ export const cards = [
     href: "about/profile.html",
     ja: { title: "私について" },
     en: { title: "Profile" },
+  },
+  {
+    id: "web008",
+    category: "creation",
+    size: "t",
+    href: "works/web008-line-tools.html",
+    ja: { title: "LINEスタンプ制作応援ツール ポータルサイト" },
+    en: { title: "LINE Sticker Tools Portal" },
   },
   {
     id: "web007",
