@@ -31,7 +31,7 @@ export const cards = [
   {
     id: "col007",
     category: "column",
-    size: "w",
+    size: "s",
     href: "https://note.com/co9_note/n/n17fb0b664e42",
     popup: {
       intro: [
@@ -68,11 +68,11 @@ export const cards = [
   {
     id: "col006",
     category: "column",
-    size: "s",
+    size: "w",
     href: "https://note.com/co9_note/n/n94a691f692f6",
     popup: {
       intro: [
-        "Googleスプレッドシートに、AIが自動で表やグラフを組み立ててくれる新機能「ビルド機能」と「Create a canvas」が登場しました(一部有料プランのみ展開中)。",
+        "Googleスプレッドシートに、AIが自動で表やグラフを組み立ててくれる新機能「ビルド機能」と「Create a canvas」が登場しました(一部有料プランのみ展開中、2026年6月時点)。",
         "今回は架空のホットサンド屋さんのデータ(1週間分の売上・客数・経費)を用意し、グラフ作成やクロス集計、原価分析、ダッシュボード作成など7つのプロンプトで検証しました。",
         "関数やグラフの範囲指定を覚える必要はなく、「〇〇のデータからこういう表を作って」と伝えるだけで完成します。",
         "関数やグラフ作成でつまずいていた方にとって、専門知識なしでスプレッドシートを使いこなせる大きな進化だと感じています。",
@@ -105,15 +105,7 @@ export const cards = [
     href: "works/sol014-kintai-app.html",
     ja: { title: "写真記録付き勤怠管理アプリ" },
     en: { title: "Photo-Verified Attendance Management App" },
-  },
-  {
-    id: "profile",
-    category: "about",
-    size: "s",
-    illustration: "img/img-profile.webp",
-    href: "about/profile.html",
-    ja: { title: "私について" },
-    en: { title: "Profile" },
+
   },
   {
     id: "web008",
@@ -130,6 +122,15 @@ export const cards = [
     href: "works/web007-bagel-shop.html",
     ja: { title: "ベーグルショップ『BAGEL & CO.』ブランドサイト" },
     en: { title: "BAGEL & CO. Brand Website" },
+  },
+  {
+    id: "art008",
+    category: "creation",
+    size: "s",
+    illustration: "img/works/art008/01.webp",
+    href: "works/art008-ai-art.html",
+    ja: { title: "Midjourney AI Art #08" },
+    en: { title: "Midjourney AI Art #08" },
   },
   {
     id: "col005",
@@ -163,15 +164,6 @@ export const cards = [
     href: "works/web006-ai-kouza.html",
     ja: { title: "最新！みんなで楽しむ生成AI（初心者向け生成AI体験講座）" },
     en: { title: "The Latest! Enjoying Generative AI Together (Beginner-Friendly AI Workshop)" },
-  },
-  {
-    id: "art008",
-    category: "creation",
-    size: "s",
-    illustration: "img/works/art008/01.webp",
-    href: "works/art008-ai-art.html",
-    ja: { title: "Midjourney AI Art #08" },
-    en: { title: "Midjourney AI Art #08" },
   },
   {
     id: "sol013",
@@ -254,6 +246,15 @@ export const cards = [
     href: "works/sol011-product-spec.html",
     ja: { title: "プロダクト仕様書 HTML自動生成ツール" },
     en: { title: "Product Spec HTML Auto-Generation Tool" },
+  },
+  {
+    id: "profile",
+    category: "about",
+    size: "s",
+    illustration: "img/img-profile.webp",
+    href: "about/profile.html",
+    ja: { title: "私について" },
+    en: { title: "Profile" },
   },
   {
     id: "solution-intro",

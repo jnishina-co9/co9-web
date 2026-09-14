@@ -1,11 +1,10 @@
 // ============================================================
 // 深森呼吸 ポートフォリオサイト メインスクリプト
 // 1. カードの生成
-// 2. 言語切り替え(日本語/英語)
-// 3. カテゴリフィルター(絞り込み+詰めアニメーション)
-// 4. ヘッダーのスクロール変化
-// 5. マス目レイアウトの固定(スロット方式)
-// 6. ドラッグでカード並び替え(入れ替え式・タッチ対応)
+// 2. カテゴリフィルター(絞り込み+詰めアニメーション)
+// 3. ヘッダーのスクロール変化
+// 4. マス目レイアウトの固定(スロット方式)
+// 5. ドラッグでカード並び替え(入れ替え式・タッチ対応)
 //
 // 【スロット方式について】
 // カードは読み込み時にマス目の座標(何列目・何行目)に固定される。
@@ -67,7 +66,7 @@ function createCard(data) {
       <div class="card-link">
         <div class="card-head">
           <span class="card-tag">DARK MODE</span>
-          <h3 class="card-title"></h3>
+          <h3 class="card-title">${data.ja.title}</h3>
         </div>
         <div class="theme-switch-wrap">
           <button type="button" class="theme-switch" id="theme-toggle" aria-pressed="false" aria-label="ダークモードに切り替える">
@@ -87,12 +86,12 @@ function createCard(data) {
           <span class="card-tag">${categoryLabel[data.category] || data.category}</span>
         </div>
         <div class="card-intro-body">
-          <h3 class="card-intro-title"></h3>
-          <p class="card-intro-text"></p>
+          <h3 class="card-intro-title">${data.ja.title}</h3>
+          <p class="card-intro-text">${data.ja.body}</p>
         </div>
         <div class="card-foot">
           <span class="pill">
-            <span class="pill-label"></span>
+            <span class="pill-label">${ui.ja.viewAll}</span>
             <span class="pill-arrow" aria-hidden="true">&#8594;</span>
           </span>
         </div>
@@ -109,12 +108,12 @@ function createCard(data) {
     <a class="card-link" href="${data.href}" draggable="false" target="_blank" rel="noopener">
       <div class="card-head">
         <span class="card-tag">${categoryLabel[data.category] || data.category}</span>
-        <h3 class="card-title"></h3>
+        <h3 class="card-title">${data.ja.title}</h3>
       </div>
       ${illustration}
       <div class="card-foot">
         <span class="pill">
-          <span class="pill-label"></span>
+          <span class="pill-label">${ui.ja.readMore}</span>
           <span class="pill-arrow" aria-hidden="true">&#8594;</span>
         </span>
       </div>
@@ -126,53 +125,7 @@ function createCard(data) {
 cards.forEach((data) => grid.appendChild(createCard(data)));
 
 // ------------------------------------------------------------
-// 2. 言語切り替え
-// ------------------------------------------------------------
-function setLang(lang) {
-  document.documentElement.lang = lang;
-
-  // data-i18n属性が付いた要素の文言を差し替える
-  document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.dataset.i18n;
-    if (ui[lang][key]) el.textContent = ui[lang][key];
-  });
-
-  // カードのタイトルとREAD MOREを差し替える
-  grid.querySelectorAll(".card").forEach((el) => {
-    const data = cards.find((c) => c.id === el.dataset.id);
-    if (!data) return;
-    const titleEl = el.querySelector(".card-title");
-    if (titleEl) titleEl.textContent = data[lang].title;
-    const pillLabel = el.querySelector(".pill-label");
-    if (pillLabel) {
-      pillLabel.textContent = data.action === "intro-text" ? ui[lang].viewAll : ui[lang].readMore;
-    }
-    const introTitleEl = el.querySelector(".card-intro-title");
-    if (introTitleEl) introTitleEl.textContent = data[lang].title;
-    const introTextEl = el.querySelector(".card-intro-text");
-    if (introTextEl) introTextEl.textContent = data[lang].body;
-  });
-
-  // ボタンの選択状態を更新
-  document.querySelectorAll(".lang-btn").forEach((btn) => {
-    const active = btn.dataset.lang === lang;
-    btn.classList.toggle("is-active", active);
-    btn.setAttribute("aria-pressed", String(active));
-  });
-}
-
-document.querySelectorAll(".lang-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    setLang(btn.dataset.lang);
-    // スマホ表示では、言語を選んだらパネルを閉じる
-    closePanelIfMobile();
-  });
-});
-
-setLang("ja");
-
-// ------------------------------------------------------------
-// 3. カテゴリフィルター
+// 2. カテゴリフィルター
 // ------------------------------------------------------------
 document.querySelectorAll(".filter-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -254,12 +207,12 @@ onScroll();
 
 // ------------------------------------------------------------
 // 4b. ハンバーガーメニュー(フィルターの開閉)
-//     PC・スマホともにタップ/クリックでのみ開閉する
-//     (デフォルトではコンテンツのカードを見せたいため、ホバーでの自動表示はしない)
+//     PC: マウスホバーで自動展開(開きっぱなし)
+//     スマホ: ハンバーガーボタンをタップした時のみ開閉
 // ------------------------------------------------------------
 const menuToggle = document.querySelector(".menu-toggle");
 const canHover = window.matchMedia("(hover: hover)");
-// スマホ用パネル表示になる画面幅かどうか
+// スマホ用パネル表示になる画面幅かどうか(767px以下)
 const panelQuery = window.matchMedia("(max-width: 767px)");
 
 // パネル表示のときは、選択後に自動で閉じる
@@ -272,8 +225,21 @@ function setMenuOpen(open) {
   menuToggle.setAttribute("aria-expanded", String(open));
 }
 
+// PC(768px以上かつホバー可能端末)では、マウスを乗せると自動で展開
+menuToggle.addEventListener("mouseenter", () => {
+  if (canHover.matches && !panelQuery.matches) {
+    setMenuOpen(true);
+  }
+});
+
+// ボタンタップ/クリック時の開閉(スマホではタップで開閉、PCでもクリックで操作可能)
 menuToggle.addEventListener("click", () => {
   setMenuOpen(!header.classList.contains("is-menu-open"));
+});
+
+// PCでメニューを開いたまま画面を縮小した際、スマホで勝手に開いて見えないよう安全に閉じる
+panelQuery.addEventListener("change", (e) => {
+  if (e.matches) setMenuOpen(false);
 });
 
 // ------------------------------------------------------------

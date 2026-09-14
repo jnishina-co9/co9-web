@@ -191,51 +191,104 @@ img {
   opacity: 1;
 }
 
-/* 言語切替(常に右上) */
-.lang-switch {
+/* 右上のプロフィールアイコン(私について) */
+.header-profile {
   position: absolute;
   right: 32px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  text-decoration: none;
+  z-index: 10;
 }
 
-.lang-btn {
+.header-profile-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+  transform-origin: 50% 90%; /* 首元を中心に揺れる */
+  animation: profile-sway 2.4s ease-in-out infinite;
+  transition: width 0.3s ease, height 0.3s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+}
+
+/* スクロールしてヘッダーが細くなった時はアイコンも上品に連動縮小 */
+.site-header.is-scrolled .header-profile-img {
+  width: 40px;
+  height: 40px;
+}
+
+/* 首をかしげるような愛らしいゆらゆらアニメーション */
+@keyframes profile-sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-9deg);
+  }
+  40% {
+    transform: rotate(7deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(3deg);
+  }
+}
+
+/* ホバーでぴょこっと浮き上がり、アニメーションを一時停止 */
+.header-profile:hover .header-profile-img {
+  animation-play-state: paused;
+  transform: scale(1.15) translateY(-2px);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+}
+
+/* ホバー時に現れる吹き出しツールチップ */
+.header-profile-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--color-charcoal);
+  color: var(--color-white);
   font-family: var(--font-accent);
-  font-weight: 600;
-  font-size: 0.72rem;
+  font-size: 0.58rem;
+  font-weight: 400;
   letter-spacing: 0.12em;
-  color: var(--color-gray);
-  background: none;
-  border: none;
-  padding: 4px 2px;
-  cursor: pointer;
-  transition: color 0.25s ease;
+  padding: 5px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.lang-btn:hover {
-  color: var(--color-charcoal);
+/* 吹き出しの小さな三角形のしっぽ */
+.header-profile-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent transparent var(--color-charcoal) transparent;
 }
 
-.lang-btn.is-active {
-  color: var(--color-black);
-}
-
-.lang-divider {
-  color: var(--color-gray);
-  font-size: 0.72rem;
-}
-
-/* タブレット・スマホ幅で「JA | EN」に短縮するための出し分け(既定はフル表記) */
-.lang-short {
-  display: none;
+.header-profile:hover .header-profile-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* キーボード操作時のフォーカス表示 */
 .filter-btn:focus-visible,
-.lang-btn:focus-visible,
+.header-profile:focus-visible,
 .menu-toggle:focus-visible,
 .logo:focus-visible,
 .card-link:focus-visible {
@@ -364,6 +417,18 @@ img {
    余白を作らず枠いっぱいにトリミングして敷き詰める */
 .card--outline .card-illustration img {
   object-fit: cover;
+}
+
+/* 「私について」カードの顔アイコンもヘッダーと同じ速度でゆらゆら揺らす */
+.card[data-id="profile"] .card-illustration img {
+  transform-origin: 50% 90%;
+  animation: profile-sway 2.4s ease-in-out infinite;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card[data-id="profile"]:hover .card-illustration img {
+  animation-play-state: paused;
+  transform: scale(1.08);
 }
 
 /* ---- 作品サムネイルカード(card--photo): 普段は画像のみを全面表示し、
@@ -871,16 +936,6 @@ img {
   }
 }
 
-/* ---- タブレット・スマホ(〜1023px): 言語切替は「JA | EN」に短縮 ---- */
-@media (max-width: 1023px) {
-  .lang-full {
-    display: none;
-  }
-
-  .lang-short {
-    display: inline;
-  }
-}
 
 /* ---- スマホ(〜767px): ヘッダー(ハンバーガーメニュー)のスマホ仕様
         ※カードの列数は下の2つのブレークポイントで別途指定する ---- */
@@ -969,30 +1024,25 @@ img {
     opacity: 1;
   }
 
-  .lang-switch {
-    position: static;
-    transform: none;
-    justify-content: center;
-    gap: 14px;
-    padding: 10px 0;
-  }
-
-  .lang-btn {
-    font-size: 1rem;
-    padding: 14px 10px;
-  }
-
-  .lang-divider {
-    font-size: 1rem;
-  }
-
-  /* 開いた時にPC用のスタイル(内側余白・横幅の上限560px)を引き継がないようにする。
-     max-widthを消し忘れるとパネル幅640px超あたりでフィルター一覧だけ560pxに
-     制限されてJA/ENの行より左寄りにずれて見える */
+  /* 開いた時にPC用のスタイル(内側余白・横幅の上限560px)を引き継がないようにする。 */
   .site-header.is-menu-open .filter-nav {
     margin: 0;
     padding: 0;
     max-width: none;
+  }
+
+  /* スマホでのプロフィールアイコン: ハンバーガーメニューの左隣に配置 */
+  .header-profile {
+    right: 72px;
+  }
+
+  .header-profile-img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .header-profile-tooltip {
+    display: none;
   }
 
   .works {
