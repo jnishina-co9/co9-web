@@ -1011,7 +1011,9 @@ img {
     font-size: 1rem;
     padding: 20px 18px;
     text-align: center;
+    border-radius: 0;
     opacity: 0.6;
+    -webkit-tap-highlight-color: var(--overlay-tint);
   }
 
   .filter-btn:hover {
