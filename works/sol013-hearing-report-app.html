@@ -121,8 +121,12 @@
     }
 
     .url-line {
-      white-space: nowrap;
-      overflow-x: auto;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .url-line + .url-line {
+      margin-top: 8px;
     }
 
     .url-line a {
@@ -424,7 +428,8 @@
           </div>
           <div class="about-card about-card--wide">
             <p class="about-label">URL</p>
-            <p class="url-line">非公開(自分専用の業務効率化ツールのため)</p>
+            <p class="url-line"><a href="https://jnishina-co9.github.io/demo-hearing-report-app/demo-hearing.html" target="_blank" rel="noopener">ヒアリングアプリのデモを見る ↗</a></p>
+            <p class="url-line"><a href="https://jnishina-co9.github.io/demo-hearing-report-app/demo-report.html" target="_blank" rel="noopener">議事録ファイルのサンプルを見る ↗</a></p>
           </div>
         </div>
 
