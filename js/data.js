@@ -99,6 +99,15 @@ export const cards = [
     en: { title: "Cursor Highlighter: Cursor Visualization Tool for Presentations & Screen Sharing" },
   },
   {
+    id: "art009",
+    category: "creation",
+    size: "s",
+    illustration: "img/works/art009/tmb.webp",
+    href: "works/art009-ai-art.html",
+    ja: { title: "AI Art #09" },
+    en: { title: "AI Art #09" },
+  },
+  {
     id: "sol014",
     category: "solution",
     size: "w",

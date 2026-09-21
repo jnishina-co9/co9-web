@@ -10,8 +10,8 @@
       document.documentElement.dataset.theme = t;
     })();
   </script>
-  <title>Midjourney AI Art #06 | 深森呼吸</title>
-  <meta name="description" content="Midjourneyで制作したAIアートワークの紹介ページ。黄色いミッドセンチュリーチェアに佇む猫と犬をモチーフに、水彩・版画・コラージュなど異なる技法で描き分けた作品を掲載しています。">
+  <title>AI Art #09 | 深森呼吸</title>
+  <meta name="description" content="Gemini（Nano Banana 2）で制作したAIアートワークの紹介ページ。写真本来の静けさや美しさに白のモノラインイラストを重ね、空間に流れる人の気配や暮らしのストーリーを軽やかに可視化した6つのバージョンを掲載しています。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&family=Outfit:wght@400;600;700&family=Work+Sans:wght@400;700&display=swap" rel="stylesheet">
@@ -26,19 +26,14 @@
        ============================================ */
 
     /* ---- サムネイルの山型(扇)配置とホバーアニメーション ----
-       (共通部分はwork.css。ここはこのページ固有の配置ロジック)
        トランプの手札のように、画面のずっと下にある見えない支点を中心と
-       した円弧の上に5枚を並べる。位置はCSSの三角関数(sin/cos)で計算:
+       した円弧の上に6枚を並べる。位置はCSSの三角関数(sin/cos)で計算:
        角度--fan-angleの札は、中央位置から横に「sin(角度)×半径」、
        縦に「半径 − cos(角度)×半径」だけずれる。
        ホバー/タップで選ばれた札(is-active)は弧の外側へ--fan-liftぶん
        せり出し、残りの札は--fan-shiftぶん弧に沿って左右へ逃げる */
     .shuffle-cards {
-      /* サムネイル自体をこのページだけ縦長(4:5)・やや小さめにする。
-         正方形素材(1024×1024)をobject-fit:coverで左右を控えめにトリミング
-         して縦長カードに見せる(お手本の理想画像=縦長カードが並ぶ構図に
-         寄せるため。work.cssの共通値(240px・正方形)は他ページに影響する
-         ため変更せず、ここで上書きする) */
+      /* サムネイル自体をこのページだけ縦長(4:5)・やや小さめにする */
       --shuffle-thumb: 180px;
       /* 扇の半径。サムネイル幅の1.25倍と広めに取り、カード同士の重なりを
          浅くして1枚ずつがちゃんと見える扇にする */
@@ -54,24 +49,24 @@
     }
 
     /* 各札の基本角度(中央0度・左右対称)と、動きの初期値。
-       20deg間隔の均等配置(-40/-20/0/20/40deg)。半径を絞った分
-       角度を大きくしても、561px幅(レスポンシブ境界の直後)まで
-       横はみ出しが起きないことを確認済み */
+       20deg間隔の均等配置(-50/-30/-10/10/30/50deg) */
     .shuffle-card { --fan-shift: 0deg; --fan-lift: 0px; }
-    .shuffle-card:nth-of-type(1) { --fan-base: -40deg; }
-    .shuffle-card:nth-of-type(2) { --fan-base: -20deg; }
-    .shuffle-card:nth-of-type(3) { --fan-base: 0deg; }
-    .shuffle-card:nth-of-type(4) { --fan-base: 20deg; }
-    .shuffle-card:nth-of-type(5) { --fan-base: 40deg; }
+    .shuffle-card:nth-of-type(1) { --fan-base: -50deg; }
+    .shuffle-card:nth-of-type(2) { --fan-base: -30deg; }
+    .shuffle-card:nth-of-type(3) { --fan-base: -10deg; }
+    .shuffle-card:nth-of-type(4) { --fan-base: 10deg; }
+    .shuffle-card:nth-of-type(5) { --fan-base: 30deg; }
+    .shuffle-card:nth-of-type(6) { --fan-base: 50deg; }
 
-    /* 重なり順: 左(バージョン1)が一番奥、右(バージョン5)が一番手前になる
-       よう、見た目の並び順=重なり順に揃える(バラバラに見えないように)。
+    /* 重なり順: 左(バージョン1)が一番奥、右(バージョン6)が一番手前になる
+       よう、見た目の並び順=重なり順に揃える。
        選択中の札はwork.cssのz-index:10が最前面にする */
     .shuffle-cards .shuffle-card:nth-of-type(1):not(.is-active) { z-index: 1; }
     .shuffle-cards .shuffle-card:nth-of-type(2):not(.is-active) { z-index: 2; }
     .shuffle-cards .shuffle-card:nth-of-type(3):not(.is-active) { z-index: 3; }
     .shuffle-cards .shuffle-card:nth-of-type(4):not(.is-active) { z-index: 4; }
     .shuffle-cards .shuffle-card:nth-of-type(5):not(.is-active) { z-index: 5; }
+    .shuffle-cards .shuffle-card:nth-of-type(6):not(.is-active) { z-index: 6; }
 
     /* 選択された札は弧の外側へせり出す */
     .shuffle-card.is-active { --fan-lift: var(--fan-lift-size); }
@@ -82,9 +77,7 @@
     .shuffle-card:has(+ .shuffle-card.is-active) { --fan-shift: -6deg; }
     .shuffle-card:has(+ .shuffle-card + .shuffle-card.is-active) { --fan-shift: -4deg; }
 
-    /* 角度→位置の計算と適用。2つ目のセレクタは、work.cssの
-       「is-activeの札を正面向きに戻す」指定をこのページでだけ打ち消す
-       ためのもの(山型を保ったまませり出させる) */
+    /* 角度→位置の計算と適用 */
     .shuffle-thumb,
     .shuffle-cards .shuffle-card.is-active .shuffle-thumb {
       --fan-angle: calc(var(--fan-base, 0deg) + var(--fan-shift));
@@ -154,23 +147,28 @@
       line-height: 1.7;
     }
 
-    /* セクション間の余白: 全テンプレ統一の96px(スマホ48px)。
-       前要素の下マージンとはマージン相殺で重なるため、境界は常に96pxになる */
+    /* セクション間の余白: 全テンプレ統一の96px(スマホ48px) */
     .about,
     .links {
       margin-top: 96px;
     }
 
-    /* タイトルカード直後、リード文がない分の余白を補う。
-       他ジャンル(リード文あり)のタイトルカード〜メインビジュアル間の
-       実測値(約204px)に合わせている */
+    /* タイトルカード直後、リード文がない分の余白を補う */
     .shuffle-cards {
       margin-top: 120px;
     }
 
-    /* サムネイルの傾きを大きくした分(お手本の3枚版より下へのはみ出しが
-       大きい)、下の大きい画像との間隔をwork.cssの既定(128px)より広げ、
-       余白が詰まって見えないようにする */
+    /* 非アクティブカードの大画像・コメント欄は高さを持たないようにする。
+       opacity:0 で見えなくなっても高さは残り下に余白が出るため、
+       is-activeでないカードの要素は height:0; overflow:hidden で潰す */
+    .shuffle-card:not(.is-active) .shuffle-visual,
+    .shuffle-card:not(.is-active) .shuffle-data {
+      height: 0;
+      overflow: hidden;
+      margin-top: 0;
+    }
+
+    /* サムネイルの傾きを大きくした分、下の大きい画像との間隔を広げる */
     .shuffle-visual {
       margin-top: 180px;
     }
@@ -188,12 +186,9 @@
 
       .shuffle-cards {
         margin-top: 80px;
-        /* デスクトップと同じ比率(180pxベース)でスマホ用に縮小 */
         --shuffle-thumb: 100px;
       }
 
-      /* デスクトップと同様、はみ出し分を見込んで広げる(work.cssの
-         既定90pxよりさらに広め) */
       .shuffle-visual {
         margin-top: 120px;
       }
@@ -217,7 +212,7 @@
     <article class="work-article">
       <section class="title-card">
         <p class="eyebrow">AI Art</p>
-        <h1>Midjourney AI Art #06</h1>
+        <h1>AI Art #09</h1>
       </section>
 
       <!-- シャッフルカード: js/shuffle-cards.jsでバージョンを切り替え -->
@@ -226,80 +221,96 @@
         <article class="shuffle-card is-active">
           <div class="shuffle-row">
             <button type="button" class="shuffle-thumb" aria-label="バージョン1を表示" aria-pressed="true">
-              <img src="../img/works/art006/01.webp" alt="斜めに色分けされたネイビー・ブルー・ピンクの壁を背景に、黄色い椅子に座る白い犬。水彩のようなにじみのタッチで、色数を絞った落ち着いた配色" width="1024" height="1024" loading="lazy">
+              <img src="../img/works/art009/01.webp" alt="静寂に包まれた森の風景に、白のモノラインで描かれた親子や森の生き物たちのイラストが重なる構図" width="1264" height="842" loading="lazy">
             </button>
           </div>
           <div class="shuffle-visual">
-            <a class="g-link" href="../img/works/art006/01.webp">
-              <img src="../img/works/art006/01.webp" alt="斜めに色分けされたネイビー・ブルー・ピンクの壁を背景に、黄色い椅子に座る白い犬。水彩のようなにじみのタッチで、色数を絞った落ち着いた配色" width="1024" height="1024" loading="lazy">
+            <a class="g-link" href="../img/works/art009/01.webp">
+              <img src="../img/works/art009/01.webp" alt="静寂に包まれた森の風景に、白のモノラインで描かれた親子や森の生き物たちのイラストが重なる構図" width="1264" height="842" loading="lazy">
             </a>
           </div>
           <div class="shuffle-data">
-            <p>鮮やかなブルー、ピンク、イエローが重なる幾何学的な色面の中に、黄色い椅子と白い犬を配置しました。整った図形の中に佇む姿が、抽象空間の中の小さな物語のように映ります。</p>
+            <p>静寂に包まれた森に、親子や森の生き物たちのイラストを重ねました。風景の静けさを損なうことなく、絵本の世界を旅するような冒険心と温もりを灯しています。</p>
           </div>
         </article>
 
         <article class="shuffle-card">
           <div class="shuffle-row">
             <button type="button" class="shuffle-thumb" aria-label="バージョン2を表示" aria-pressed="false">
-              <img src="../img/works/art006/02.webp" alt="ブルー・イエロー・ピンクの色面を背景に、黄色と青の椅子に座る子猫。版画のような硬質な質感で仕上げた一枚" width="1024" height="1024" loading="lazy">
+              <img src="../img/works/art009/02.webp" alt="クラシカルなカフェの店内に、白のモノラインで描かれた語らう客や店員のイラストが重なる構図" width="1264" height="947" loading="lazy">
             </button>
           </div>
           <div class="shuffle-visual">
-            <a class="g-link" href="../img/works/art006/02.webp">
-              <img src="../img/works/art006/02.webp" alt="ブルー・イエロー・ピンクの色面を背景に、黄色と青の椅子に座る子猫。版画のような硬質な質感で仕上げた一枚" width="1024" height="1024" loading="lazy">
+            <a class="g-link" href="../img/works/art009/02.webp">
+              <img src="../img/works/art009/02.webp" alt="クラシカルなカフェの店内に、白のモノラインで描かれた語らう客や店員のイラストが重なる構図" width="1264" height="947" loading="lazy">
             </a>
           </div>
           <div class="shuffle-data">
-            <p>スタイルリファレンスを使い、版画のような硬質なタッチで猫バージョンも制作しました。鮮やかなイエローとブルーに淡いピンクを合わせた配色で、猫と椅子をアクセントにした遊び心のある作品になりました。</p>
+            <p>落ち着いたカフェの空間に、語らう客や店員のイラスト。クラシカルな店内の佇まいを邪魔することなく、穏やかな会話や珈琲の香りが漂うような日常の情景を浮かび上がらせています。</p>
           </div>
         </article>
 
         <article class="shuffle-card">
           <div class="shuffle-row">
             <button type="button" class="shuffle-thumb" aria-label="バージョン3を表示" aria-pressed="false">
-              <img src="../img/works/art006/03.webp" alt="観葉植物とピンクの花瓶に囲まれ、黄色い椅子に座る子犬。ピンク・ブルー・イエローの色面が重なるコラージュ風の背景" width="1024" height="1024" loading="lazy">
+              <img src="../img/works/art009/03.webp" alt="夕暮れの穏やかな浜辺に、白のモノラインで描かれた散歩する親子や駆け回る犬たちのイラストが重なる構図" width="1264" height="842" loading="lazy">
             </button>
           </div>
           <div class="shuffle-visual">
-            <a class="g-link" href="../img/works/art006/03.webp">
-              <img src="../img/works/art006/03.webp" alt="観葉植物とピンクの花瓶に囲まれ、黄色い椅子に座る子犬。ピンク・ブルー・イエローの色面が重なるコラージュ風の背景" width="1024" height="1024" loading="lazy">
+            <a class="g-link" href="../img/works/art009/03.webp">
+              <img src="../img/works/art009/03.webp" alt="夕暮れの穏やかな浜辺に、白のモノラインで描かれた散歩する親子や駆け回る犬たちのイラストが重なる構図" width="1264" height="842" loading="lazy">
             </a>
           </div>
           <div class="shuffle-data">
-            <p>別プロンプトでのアレンジバージョンです。鮮やかなイエローとブルーを軸に、背景のピンクの色面と、オレンジやグリーンの観葉植物を重ねました。</p>
+            <p>夕暮れの穏やかな浜辺に、散歩する親子や駆け回る犬たちのイラスト。波音とともに流れるあたたかく愛おしい時間をそっと描き出しています。</p>
           </div>
         </article>
 
         <article class="shuffle-card">
           <div class="shuffle-row">
             <button type="button" class="shuffle-thumb" aria-label="バージョン4を表示" aria-pressed="false">
-              <img src="../img/works/art006/04.webp" alt="緑豊かな観葉植物に囲まれ、黄色い椅子に座る白猫。ブルー・イエロー・ピンクの色面を背景に、静けさをたたえた一枚" width="1024" height="1024" loading="lazy">
+              <img src="../img/works/art009/04.webp" alt="横断歩道を渡る女性の周りに、白のモノラインで描かれた行き交う家族やペットたちのイラストが重なる構図" width="1024" height="1024" loading="lazy">
             </button>
           </div>
           <div class="shuffle-visual">
-            <a class="g-link" href="../img/works/art006/04.webp">
-              <img src="../img/works/art006/04.webp" alt="緑豊かな観葉植物に囲まれ、黄色い椅子に座る白猫。ブルー・イエロー・ピンクの色面を背景に、静けさをたたえた一枚" width="1024" height="1024" loading="lazy">
+            <a class="g-link" href="../img/works/art009/04.webp">
+              <img src="../img/works/art009/04.webp" alt="横断歩道を渡る女性の周りに、白のモノラインで描かれた行き交う家族やペットたちのイラストが重なる構図" width="1024" height="1024" loading="lazy">
             </a>
           </div>
           <div class="shuffle-data">
-            <p>こちらは猫バージョンです。壁色と植物が調和し、心地よい作品に仕上がりました。</p>
+            <p>横断歩道を渡る一人の女性の周りに、行き交う家族やペットたちのイラスト。写真が持つ独特な構図を活かしつつ、それぞれの日常が交差する瞬間を切り取ったようなストーリーを添えています。</p>
           </div>
         </article>
 
         <article class="shuffle-card">
           <div class="shuffle-row">
             <button type="button" class="shuffle-thumb" aria-label="バージョン5を表示" aria-pressed="false">
-              <img src="../img/works/art006/05.webp" alt="正面を見つめて黄色い椅子に座る白猫。観葉植物とイエロー・ブルー・ピンクの色面に囲まれ、凛とした佇まい" width="1024" height="1024" loading="lazy">
+              <img src="../img/works/art009/05.webp" alt="幻想的な紅い満月の夜空に、白のモノラインで描かれたツリーハウスで遊ぶ子供たちや月を見上げる人々のイラストが重なる構図" width="1264" height="842" loading="lazy">
             </button>
           </div>
           <div class="shuffle-visual">
-            <a class="g-link" href="../img/works/art006/05.webp">
-              <img src="../img/works/art006/05.webp" alt="正面を見つめて黄色い椅子に座る白猫。観葉植物とイエロー・ブルー・ピンクの色面に囲まれ、凛とした佇まい" width="1024" height="1024" loading="lazy">
+            <a class="g-link" href="../img/works/art009/05.webp">
+              <img src="../img/works/art009/05.webp" alt="幻想的な紅い満月の夜空に、白のモノラインで描かれたツリーハウスで遊ぶ子供たちや月を見上げる人々のイラストが重なる構図" width="1264" height="842" loading="lazy">
             </a>
           </div>
           <div class="shuffle-data">
-            <p>前作の穏やかな猫から一転、今回は正面を向いて凛と佇む猫を描きました。生い茂る植物や鮮やかな色彩に囲まれながらも、まっすぐな視線が猫の存在感を際立たせています。</p>
+            <p>幻想的な紅い満月の夜空に、ツリーハウスで遊ぶ子供たちや、月を見上げる人々のイラスト。誰もが胸に抱く無垢な憧れや、終わらない夢のような物語の世界を表現しています。</p>
+          </div>
+        </article>
+
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン6を表示" aria-pressed="false">
+              <img src="../img/works/art009/06.webp" alt="東京駅丸の内駅舎を背景にした壮麗な夜景に、白のモノラインで描かれた記念撮影をする人々や語らう家族のイラストが重なる構図" width="1264" height="842" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art009/06.webp">
+              <img src="../img/works/art009/06.webp" alt="東京駅丸の内駅舎を背景にした壮麗な夜景に、白のモノラインで描かれた記念撮影をする人々や語らう家族のイラストが重なる構図" width="1264" height="842" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>東京駅丸の内駅舎を背景にした壮麗な夜景に、記念撮影をする人々や語らう家族のイラスト。都会の洗練された光の中に、人々の温かな営みや賑わいが違和感なく溶け込み、日常の何気ない瞬間の尊さを再発見させてくれます。</p>
           </div>
         </article>
 
@@ -311,22 +322,17 @@
 
           <div class="about-card about-card--wide">
             <p class="about-label">Project</p>
-            <p class="project-name">Midjourney AI Art #06</p>
+            <p class="project-name">AI Art #09</p>
           </div>
 
-          <div class="about-card">
+          <div class="about-card about-card--wide">
             <p class="about-label">Tool</p>
-            <p>Midjourney</p>
-          </div>
-
-          <div class="about-card">
-            <p class="about-label">Date</p>
-            <p>2025年2月</p>
+            <p>Gemini（Nano Banana 2）</p>
           </div>
 
           <div class="about-card about-card--black about-card--wide">
             <p class="about-label">Design Concept</p>
-            <p>黄色いミッドセンチュリーチェアに佇む猫と犬をモチーフに、色面の大胆さと質感の柔らかさを探ったシリーズです。水彩・版画・コラージュと技法を変えながら同じモチーフを展開し、スタイルリファレンスでバージョンを広げました。</p>
+            <p>写真本来の静けさや美しさを損なうことなく、白のモノライン（均一な太さの単一線）による手描き風のイラストを重ねることで、空間に流れる人の気配や暮らしのストーリーを軽やかに可視化しました。顔の特徴を描かないミニマルな線画に留めることで、主役である被写体を邪魔せず、見る人それぞれの心地よい日常や温もりを自由に投影できる余白を生み出しています。</p>
           </div>
 
         </div>
@@ -335,6 +341,10 @@
       <section class="links">
         <h2>もっと詳しく</h2>
         <div class="link-list">
+          <a class="cta" href="https://note.com/co9_note/n/na3f109db826d" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">NOTE</span>制作の裏側をnoteで読む</span>
+            <span class="circle" aria-hidden="true">&#8594;</span>
+          </a>
           <a class="cta cta--white" href="../about/contact.html">
             <span class="label"><span class="sub">CONTACT</span>こんなデザインが欲しい、を相談する</span>
             <span class="circle" aria-hidden="true">&#8594;</span>
