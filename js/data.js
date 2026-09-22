@@ -29,6 +29,22 @@
 
 export const cards = [
   {
+    id: "web009",
+    category: "creation",
+    size: "s",
+    href: "works/web009-co9co9com.html",
+    ja: { title: "ポートフォリオサイト『深森呼吸』" },
+    en: { title: "Portfolio Site: Shinshin Kokyu" },
+  },
+  {
+    id: "sol017",
+    category: "solution",
+    size: "s",
+    href: "works/sol017-gem-line-art.html",
+    ja: { title: "写真×白線イラストの画像編集プロンプト生成用Gem" },
+    en: { title: "Gemini Gem for Photo & White Line-Art Prompts" },
+  },
+  {
     id: "col007",
     category: "column",
     size: "s",
