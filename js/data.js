@@ -31,18 +31,10 @@ export const cards = [
   {
     id: "web009",
     category: "creation",
-    size: "s",
+    size: "w",
     href: "works/web009-co9co9com.html",
     ja: { title: "ポートフォリオサイト『深森呼吸』" },
     en: { title: "Portfolio Site: Shinshin Kokyu" },
-  },
-  {
-    id: "sol017",
-    category: "solution",
-    size: "s",
-    href: "works/sol017-gem-line-art.html",
-    ja: { title: "写真×白線イラストの画像編集プロンプト生成用Gem" },
-    en: { title: "Gemini Gem for Photo & White Line-Art Prompts" },
   },
   {
     id: "col007",
@@ -72,6 +64,14 @@ export const cards = [
     },
     ja: { title: "StudioからGitHub Pagesへ、独自ドメインを完全無料で移行した5ステップ" },
     en: { title: "5 Steps to Migrating a Custom Domain from Studio to GitHub Pages for Free" },
+  },
+  {
+    id: "sol017",
+    category: "solution",
+    size: "s",
+    href: "works/sol017-gem-line-art.html",
+    ja: { title: "写真×白線イラストの画像編集プロンプト生成用Gem" },
+    en: { title: "Gemini Gem for Photo & White Line-Art Prompts" },
   },
   {
     id: "sol016",
