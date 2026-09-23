@@ -182,10 +182,90 @@
       text-decoration: none;
     }
 
+    /* ---- こだわりと仕様 (Features Grid) ---- */
+    .features {
+      margin-top: 96px;
+    }
+
+    .features-intro {
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: var(--color-gray);
+      margin: -24px 0 36px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .feat-card {
+      background: var(--color-white);
+      color: var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: clamp(20px, 3.5vw, 28px);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--divider-soft);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+      cursor: default;
+    }
+
+    .feat-card:hover {
+      transform: translateY(-6px) rotate(-1.5deg) scale(1.02);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      border-color: var(--color-black);
+    }
+
+    .features-grid > .feat-card:nth-child(even):hover {
+      transform: translateY(-6px) rotate(1.5deg) scale(1.02);
+    }
+
+    .feat-tag {
+      align-self: flex-start;
+      font-family: var(--font-accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: var(--color-black);
+      color: var(--color-white);
+      border-radius: 999px;
+      padding: 3px 12px;
+      margin-bottom: 14px;
+      transition: transform 0.3s ease;
+    }
+
+    .feat-card:hover .feat-tag {
+      transform: scale(1.05);
+    }
+
+    .feat-title {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.5;
+      margin: 0 0 10px;
+      color: var(--color-charcoal);
+    }
+
+    .feat-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--color-charcoal);
+    }
+
     @media (max-width: 560px) {
       .about,
-      .links {
+      .links,
+      .features {
         margin-top: 48px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
       }
 
       .mock-bar {
@@ -222,7 +302,7 @@
         <h1>ポートフォリオサイト『深森呼吸』</h1>
       </section>
 
-      <p class="work-lead">私自身のポートフォリオサイト『深森呼吸』をリニューアルしました。<br>今回はAnthropicのClaude Code（AIを活用したコーディングアシスタントツール）と対話しながら、外部ライブラリやフレームワークに頼らないバニラHTML/CSS/JavaScript（Web標準技術）のみで実装。<br>直角基調のミニマルなモノトーンデザインに、直感的にカードを動かせるドラッグ＆ドロップUI、OS設定と連動するダークモード、首元を中心にゆらゆら愛らしく揺れるプロフィールアイコンなど、細部までこだわりを込めた設計です。</p>
+      <p class="work-lead">私自身のポートフォリオサイト『深森呼吸』をリニューアルしました。<br>今回はAnthropicのClaude Code（AIを活用したコーディングアシスタントツール）と対話しながら、外部ライブラリやフレームワークに頼らないバニラHTML/CSS/JavaScript（Web標準技術）のみで実装。<br>直角基調のミニマルなモノトーンデザインに、直感的にカードを動かせるドラッグ＆ドロップUI、OS設定と連動するダークモード、首元を中心にゆらゆら愛らしく揺れるプロフィールアイコンなど、高い堅牢性と遊び心のあるインタラクティブ体験を融合させた設計です。</p>
 
       <section class="hero-mockup" aria-label="サイトの画面イメージ">
         <figure class="mock-pc">
@@ -263,16 +343,61 @@
 
           <div class="about-card about-card--black about-card--wide">
             <p class="about-label">Target &amp; Purpose</p>
-            <p>ターゲットは、業務改善（SOLUTION）やWeb制作・デザイン（CREATION）の相談を検討している企業や個人事業主の方。ノーコード（Studio）から自作コードへ移行し、「業務の仕組み化」と「クリエイティブ」という2本柱の実務力をわかりやすく発信すること。そして、フレームワークを使わない軽量・堅牢なWeb標準技術で組むことで、高い表示速度と長期的な保守性を実現し、技術力とデザイン品質の両面を体現することを目的としています。</p>
+            <p>業務改善（SOLUTION）やWeb制作・デザイン（CREATION）の相談を検討している中小企業・小規模企業者や個人事業主の方に向けて、ノーコード（Studio）から自作コードへ移行し、「業務の仕組み化」と「クリエイティブ」という2本柱の実務力をわかりやすく発信することを目的としています。</p>
           </div>
 
           <div class="about-card about-card--wide about-card--outline">
             <p class="about-label">Design Concept</p>
-            <p>白とチャコールグレーのモノトーン配色に、可読性の高さと遊び心のあるフォントを組み合わせ、端正でありながら親しみやすい世界観を表現しました。<br><br>さらに、「触って楽しい、生き生きとしたインタラクティブ体験」を追求。バニラJavaScriptで独自実装したドラッグ＆ドロップUIは、FLIPアニメーション（要素の移動を滑らかに見せる技術）とマス目固定のスロット方式を採用し、指やマウスに吸い付くような心地よい並び替えを実現しています。右上で首をかしげるように揺れるプロフィールアイコン（ホバーでぴょこっと浮き上がり一時停止）や、カードからワンタップで切り替えられるダークモードなど、細部にまで遊び心を散りばめ、静と動が心地よく共存する体験をデザインしました。</p>
+            <p>白とチャコールグレーの端正なモノトーン配色に、角丸のないシャープな四角いカードと丸みのあるボタンを組み合わせ、洗練性と親しみやすさを両立させました。<br>また、作品のジャンルに合わせて個別にレイアウトを設計。戦略的な導線設計と触って楽しい演出を随所に散りばめ、静と動が心地よく共存する体験をデザインしています。</p>
           </div>
 
         </div>
       </section><!-- /.about -->
+
+      <section class="features" aria-label="こだわりと技術仕様">
+        <p class="sec-label">Features &amp; Highlights</p>
+        <h2 class="summary-title">こだわりと仕様</h2>
+
+        <div class="features-grid">
+
+          <article class="feat-card">
+            <span class="feat-tag">Pure Vanilla</span>
+            <h3 class="feat-title">外部ツールに頼らない自作コード</h3>
+            <p>React等の外部ライブラリを一切使わず、ブラウザ標準の技術のみで構築。将来にわたって勝手に崩れない安心感と、圧倒的な表示スピードを両立しています。</p>
+          </article>
+
+          <article class="feat-card">
+            <span class="feat-tag">Algorithm</span>
+            <h3 class="feat-title">独自開発の「スロット方式」ドラッグUI</h3>
+            <p>全体の配置を崩さず、動かしたカード同士だけがスムーズに入れ替わる快適な操作性を実現。手で触れて動かす楽しさと、整然とした美しさを両立させました。</p>
+          </article>
+
+          <article class="feat-card">
+            <span class="feat-tag">Multi Layout</span>
+            <h3 class="feat-title">作品の個性を引き出すマルチレイアウト</h3>
+            <p>スペック表、シャッフルカード、ギャラリーなど、作品ジャンルの特性に合わせて個別に設計。それぞれの魅力が一番引き立つ見せ方にこだわりました。</p>
+          </article>
+
+          <article class="feat-card">
+            <span class="feat-tag">UI &amp; Strategy</span>
+            <h3 class="feat-title">ABOUT ME直結のゆらゆらアイコン</h3>
+            <p>首元を中心に揺れる愛らしい動きと、最も知ってほしい「制作者自身の人となり・実績」へ、どこからでも1クリックで届く最短導線を構築しました。</p>
+          </article>
+
+          <article class="feat-card">
+            <span class="feat-tag">Security</span>
+            <h3 class="feat-title">0円フォーム ＆ ハニーポット</h3>
+            <p>月額費用0円で通知・データ保存を自動化。画面上は見えないダミー項目を用いたハニーポット（スパム対策）を組み込み、迷惑メールを自動で遮断します。</p>
+          </article>
+
+          <article class="feat-card">
+            <span class="feat-tag">AI Workflow</span>
+            <h3 class="feat-title">AIエージェント協働のコマンド開発</h3>
+            <p>Claude CodeやAntigravity等のAIツール向けに専用コマンド（/j-work-*）を実装し、制作フローの標準化と高効率なサイト運用環境を確立しました。</p>
+          </article>
+
+        </div>
+      </section><!-- /.features -->
 
       <section class="links">
         <p class="sec-label">Links</p>
