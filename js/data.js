@@ -29,6 +29,29 @@
 
 export const cards = [
   {
+    id: "col008",
+    category: "column",
+    size: "s",
+    href: "https://note.com/co9_note/n/n0827d31c9118",
+    popup: {
+      intro: [
+        "ChatGPT環境への移行を機に、これまでClaude Codeで整えてきた初期環境づくりの記録をまとめました。",
+        "非エンジニアでも取り組めるよう、公式Skillsの導入方法やルール設計の考え方を紹介しています。作業環境を変えるタイミングだからこそ残しておきたい設定の意味と背景を、AIを使い続ける中で感じた実体験を交えて書きました。",
+        "AIエージェント活用のセットアップに興味がある方に、ぜひ読んでいただきたいです。",
+      ],
+      links: [
+        {
+          sub: "NOTE",
+          label: "noteで記事を読む",
+          href: "https://note.com/co9_note/n/n0827d31c9118",
+          external: true,
+        },
+      ],
+    },
+    ja: { title: "AIエージェント移行前の備忘録｜非エンジニアのためのClaude Code初期環境づくり" },
+    en: { title: "Pre-Migration Notes: Claude Code Setup for Non-Engineers" },
+  },
+  {
     id: "web009",
     category: "creation",
     size: "w",
@@ -36,6 +59,7 @@ export const cards = [
     ja: { title: "ポートフォリオサイト『深森呼吸』" },
     en: { title: "Portfolio Site: Shinshin Kokyu" },
   },
+
   {
     id: "col007",
     category: "column",
