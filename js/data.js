@@ -29,6 +29,14 @@
 
 export const cards = [
   {
+    id: "sol018",
+    category: "solution",
+    size: "w",
+    href: "works/sol018-ws-faq-bot.html",
+    ja: { title: "【Google Workspace StudioとGemini Notebook】社内ルール問い合わせの自動化＆FAQ蓄積フロー" },
+    en: { title: "Automating Internal FAQ & Knowledge Accumulation with Google Workspace Studio and Gemini Notebook" },
+  },
+  {
     id: "col008",
     category: "column",
     size: "s",
@@ -54,7 +62,7 @@ export const cards = [
   {
     id: "web009",
     category: "creation",
-    size: "w",
+    size: "s",
     href: "works/web009-co9co9com.html",
     ja: { title: "ポートフォリオサイト『深森呼吸』" },
     en: { title: "Portfolio Site: Shinshin Kokyu" },
@@ -671,20 +679,20 @@ export const cards = [
     en: { title: "Portfolio Site: journey" },
   },
   {
-    id: "sol001",
-    category: "solution",
-    size: "s",
-    href: "works/sol001-appsheet-keihi.html",
-    ja: { title: "AppSheet制作事例 #01『経費精算アプリ』" },
-    en: { title: "AppSheet Case Study #01: Expense Report App" },
-  },
-  {
     id: "securityaction",
     category: "about",
     size: "s",
     href: "about/securityaction.html",
     ja: { title: "情報セキュリティ基本方針" },
     en: { title: "Security Policy" },
+  },
+  {
+    id: "sol001",
+    category: "solution",
+    size: "s",
+    href: "works/sol001-appsheet-keihi.html",
+    ja: { title: "AppSheet制作事例 #01『経費精算アプリ』" },
+    en: { title: "AppSheet Case Study #01: Expense Report App" },
   },
   {
     id: "about-intro",
