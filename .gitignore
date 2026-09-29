@@ -4,3 +4,7 @@ desktop.ini
 *.log
 .vscode/
 node_modules/
+
+# AI tools (not for public)
+.agents/
+.claude/
