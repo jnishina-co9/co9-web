@@ -67,10 +67,92 @@
     /* ===== HERO(タイトルカード → リード文 → デモ動画) =====
        タイトルは他テンプレ共通の .title-card(work.css:アクセント背景×白文字)をそのまま使う
        (--radius:0 のためこのカードも直角になり、直角基調と矛盾しない) */
+    .hero .title-card {
+      margin-bottom: clamp(24px, 4vw, 36px);
+    }
+
     .hero p.lead {
       font-size: 17px;
       margin: 0 0 64px;
     }
+
+    /* ===== UPDATE BANNER (ver.2への案内) ===== */
+    .update-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: var(--color-white);
+      border: 1px solid var(--color-charcoal);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 0 0 clamp(32px, 5vw, 48px);
+      text-decoration: none;
+      color: var(--color-charcoal);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                  background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                  border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .update-banner:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-black);
+      background-color: var(--overlay-tint);
+    }
+
+    .update-banner-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .update-banner-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-accent);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: var(--color-black);
+    }
+
+    .update-banner-tag::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--color-black);
+    }
+
+    .update-banner-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-black);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .update-banner-desc {
+      font-size: 14px;
+      color: var(--color-charcoal);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .update-banner-arrow {
+      font-family: var(--font-accent);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-black);
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .update-banner:hover .update-banner-arrow {
+      transform: translateX(4px);
+    }
+
 
     /* ===== Quick Summary(Project/Date/Tool/URLのベントーカード。
        web008-line-tools.htmlのabout-gridから4項目のみ流用。
@@ -354,6 +436,16 @@
       table.spec tr:first-child th { border-top: 1px solid var(--color-charcoal); }
       .hero p.lead { font-size: 15px; }
       .step .step-num { font-size: 26px; }
+      .update-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px 18px;
+        margin-bottom: 28px;
+      }
+      .update-banner-arrow {
+        align-self: flex-end;
+      }
     }
   </style>
 </head>
@@ -379,6 +471,15 @@
           <p class="eyebrow">Solution</p>
           <h1>LINEスタンプ制作応援・第1弾! 画像背景透過ツール</h1>
         </div>
+
+        <a class="update-banner" href="sol019-line-bg-remover-v2.html">
+          <div class="update-banner-content">
+            <div class="update-banner-tag en">UPDATE / VER.2</div>
+            <p class="update-banner-title">ブラッシュアップ版「LINEスタンプ特化型・背景透過ツール ver.2」を公開しました</p>
+            <p class="update-banner-desc">待ち時間ゼロ・境界線の仕上がりを改善した最新バージョンです。詳細ページはこちら</p>
+          </div>
+          <span class="update-banner-arrow" aria-hidden="true">&#8594;</span>
+        </a>
 
         <p class="lead">LINEスタンプ制作でつまずきやすい背景の切り抜きを、ブラウザだけで完結できるツールを開発しました。画像をアップロードするだけで、AIが被写体を自動識別し、輪郭をなめらかに切り抜いて背景を透過します。仕上がりはその場でプレビューでき、気に入った透過PNG画像はワンクリックでダウンロードできます。</p>
 
@@ -414,7 +515,7 @@
           </div>
           <div class="about-card about-card--wide">
             <p class="about-label">URL</p>
-            <p class="url-line"><a href="https://jnishina-co9.github.io/line-background-remover/" target="_blank" rel="noopener">ツールを実際に使ってみる ↗</a></p>
+            <p class="url-line"><a href="https://jnishina-co9.github.io/line-bg-remover-v2/" target="_blank" rel="noopener">ツールを実際に使ってみる(ver.2) ↗</a></p>
           </div>
         </div>
 
@@ -569,8 +670,8 @@
         <div class="sec-label en">Links</div>
         <h2>もっと詳しく</h2>
         <div class="link-list">
-          <a class="cta" href="https://jnishina-co9.github.io/line-background-remover/" target="_blank" rel="noopener">
-            <span class="label"><span class="sub">TRY IT</span>ツールを実際に使ってみる</span>
+          <a class="cta" href="https://jnishina-co9.github.io/line-bg-remover-v2/" target="_blank" rel="noopener">
+            <span class="label"><span class="sub">TRY IT</span>ツールを実際に使ってみる(ver.2)</span>
             <span class="circle" aria-hidden="true">&#8594;</span>
           </a>
           <a class="cta" href="https://jnishina-co9.github.io/line-background-remover/spec.html" target="_blank" rel="noopener">

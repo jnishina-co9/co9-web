@@ -29,6 +29,14 @@
 
 export const cards = [
   {
+    id: "sol019",
+    category: "solution",
+    size: "s",
+    href: "works/sol019-line-bg-remover-v2.html",
+    ja: { title: "LINEスタンプ特化型・背景透過ツール ver.2" },
+    en: { title: "LINE Sticker Background Remover ver.2" },
+  },
+  {
     id: "sol018",
     category: "solution",
     size: "w",
