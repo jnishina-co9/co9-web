@@ -397,7 +397,7 @@ export const cards = [
     id: "sol007",
     category: "solution",
     size: "s",
-    href: "works/sol007-line-background-remover.html",
+    href: "works/sol007-line-bg-remover.html",
     ja: { title: "LINEスタンプ制作応援・第1弾! 画像背景透過ツール" },
     en: { title: "LINE Sticker Tools #1: Image Background Remover" },
   },
