@@ -117,8 +117,8 @@ export const cards = [
     id: "sol016",
     category: "solution",
     size: "s",
-    href: "works/sol016-skill-library-ver1.html",
-    ja: { title: "Web制作 ルール＆スキル集 ver.1" },
+    href: "works/sol016-skills-library.html",
+    ja: { title: "Web制作 ルール＆スキル集" },
     en: { title: "Web Production Rules & Skill Library" },
   },
   {
