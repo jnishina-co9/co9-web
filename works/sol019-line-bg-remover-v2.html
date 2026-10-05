@@ -348,21 +348,9 @@
       color: var(--color-black);
     }
 
-    /* ===== チップ一覧 ===== */
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .chip {
-      font-family: var(--font-accent);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      border: 1px solid var(--color-charcoal);
-      border-radius: 999px;
-      padding: 3px 12px;
-      color: var(--color-charcoal);
+    /* このテンプレのチップは直角 */
+    table.spec .chip {
+      border-radius: 0;
     }
 
     /* ===== Links(CTAボタン) ===== */
@@ -544,14 +532,14 @@
           <h1>LINEスタンプ特化型・背景透過ツール ver.2</h1>
         </div>
 
-        <p class="lead">以前公開した背景透過ツールの課題を振り返り、LINEスタンプ制作の実用性に徹底してこだわって作り直した第2弾です。対象を単色背景のイラストに絞り込み、AIライブラリを使わず標準のHTMLとJavaScriptのみで再構築したことで、モデル読み込みの待ち時間ゼロと軽快な動作を実現しました。画像データを外部へ送信しない安全なブラウザ内処理はそのままに、フチまできれいな透過PNGを作成できます。</p>
+        <p class="lead">以前公開した背景透過ツールの課題を振り返り、LINEスタンプ制作の実用性にこだわって作り直した第2弾です。対象を単色背景のイラストに絞り込み、AIライブラリを使わず標準のHTMLとJavaScriptのみで再構築したことで、モデル読み込みの待ち時間ゼロと軽快な動作を実現しました。画像データを外部へ送信しない安全なブラウザ内処理はそのままに、フチまできれいな透過PNGを作成できます。</p>
 
         <figure class="mock-pc" aria-label="ツールの操作デモ動画">
           <div class="mock-bar" aria-hidden="true">
             <span class="mock-dot"></span>
             <span class="mock-dot"></span>
             <span class="mock-dot"></span>
-            <span class="mock-url">jnishina-co9.github.io/line-bg-remover-v2</span>
+            <span class="mock-url">jnishina-co9.github.io/line-background-remover</span>
           </div>
           <video src="../img/works/sol019/demo_v2.mp4" width="1920" height="1080" autoplay muted loop playsinline controls preload="metadata"></video>
         </figure>
@@ -578,7 +566,7 @@
           </div>
           <div class="about-card about-card--wide">
             <p class="about-label">URL</p>
-            <p class="url-line"><a href="https://jnishina-co9.github.io/line-bg-remover-v2/" target="_blank" rel="noopener">ツールを実際に使ってみる ↗</a></p>
+            <p class="url-line"><a href="https://jnishina-co9.github.io/line-background-remover/" target="_blank" rel="noopener">ツールを実際に使ってみる ↗</a></p>
           </div>
         </div>
 
@@ -603,7 +591,7 @@
             </tr>
             <tr>
               <th>制約・スコープ外</th>
-              <td>単色背景イラスト専用（写真の複雑な背景は非対応） / ユーザーデータの保存機能なし / IE・旧ブラウザは非対応</td>
+              <td>単色背景イラスト専用（写真の複雑な背景は非対応） / IE・旧ブラウザは非対応</td>
             </tr>
           </tbody>
         </table>
@@ -674,7 +662,7 @@
               <tr>
                 <th>使用技術</th>
                 <td>React / Vite / AIライブラリ</td>
-                <td class="col-v2">HTML / CSS / JavaScript（外部ライブラリ不使用）</td>
+                <td class="col-v2">HTML / CSS / JavaScript</td>
               </tr>
               <tr>
                 <th>初期起動速度</th>
@@ -706,8 +694,8 @@
             <p>元画像の背景をクリックするだけで直接色を取得。カラーパレットやカラーコードの直接入力にも対応しています。</p>
           </div>
           <div>
-            <h3><span class="fnum en">4</span>エッジ色補正（フリンジ除去）</h3>
-            <p>イラストと背景の境界に残る薄い背景色を計算で除去。LINEスタンプの審査基準にも適した輪郭に整えます。</p>
+            <h3><span class="fnum en">4</span>輪郭の色残りを補正（フリンジ除去）</h3>
+            <p>イラストのフチに残る背景色をきれいに除去。初期値のクロマキーグリーン（#00FF00）背景で最も高い効果を発揮します。</p>
           </div>
           <div>
             <h3><span class="fnum en">5</span>3種類の確認用背景プレビュー</h3>
@@ -761,11 +749,11 @@
         <div class="sec-label en">Links</div>
         <h2>もっと詳しく</h2>
         <div class="link-list">
-          <a class="cta" href="https://jnishina-co9.github.io/line-bg-remover-v2/" target="_blank" rel="noopener">
+          <a class="cta" href="https://jnishina-co9.github.io/line-background-remover/" target="_blank" rel="noopener">
             <span class="label"><span class="sub">TRY IT</span>ツールを実際に使ってみる</span>
             <span class="circle" aria-hidden="true">&#8594;</span>
           </a>
-          <a class="cta" href="https://jnishina-co9.github.io/line-bg-remover-v2/spec.html" target="_blank" rel="noopener">
+          <a class="cta" href="https://jnishina-co9.github.io/line-background-remover/spec.html" target="_blank" rel="noopener">
             <span class="label"><span class="sub">SPEC</span>仕様書を見る(機能の詳細)</span>
             <span class="circle" aria-hidden="true">&#8594;</span>
           </a>
