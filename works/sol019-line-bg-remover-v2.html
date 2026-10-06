@@ -328,24 +328,27 @@
       margin: 0;
     }
 
-    /* ===== Specification(スペックテーブル) ===== */
+    /* ===== 基本情報テーブル(概要セクションに統合) ===== */
     table.spec {
       width: 100%;
       border-collapse: collapse;
-      border-bottom: 1px solid var(--color-charcoal);
-      margin-bottom: 40px;
+      background: var(--color-white);
     }
-    table.spec th, table.spec td {
-      padding: 18px 12px;
-      border-top: 1px solid var(--color-charcoal);
-      text-align: left;
+
+    table.spec th,
+    table.spec td {
+      border: 1px solid var(--color-charcoal);
+      padding: 15px 20px;
       font-size: 15.5px;
-      vertical-align: middle;
+      text-align: left;
+      vertical-align: top;
     }
+
     table.spec th {
-      width: 180px;
+      background: var(--color-bg);
       font-weight: 700;
-      color: var(--color-black);
+      width: 26%;
+      white-space: nowrap;
     }
 
     /* このテンプレのチップは直角 */
