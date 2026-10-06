@@ -177,8 +177,8 @@ export const cards = [
     category: "creation",
     size: "t",
     href: "works/web008-line-sticker-site.html",
-    ja: { title: "LINEスタンプ制作応援ツール ポータルサイト" },
-    en: { title: "LINE Sticker Tools Portal" },
+    ja: { title: "LINEスタンプ制作キット ポータルサイト" },
+    en: { title: "LINE Sticker Kit Portal" },
   },
   {
     id: "web007",
