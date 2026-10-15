@@ -29,6 +29,14 @@
 
 export const cards = [
   {
+    id: "sol020",
+    category: "solution",
+    size: "s",
+    href: "works/sol020-chart-showcase.html",
+    ja: { title: "動的グラフ アニメーション見本帳" },
+    en: { title: "Dynamic Chart Animation Showcase" },
+  },
+  {
     id: "sol019",
     category: "solution",
     size: "s",
