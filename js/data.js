@@ -29,6 +29,14 @@
 
 export const cards = [
   {
+    id: "sol021",
+    category: "solution",
+    size: "s",
+    href: "works/sol021-dads-dashboard.html",
+    ja: { title: "デジタル庁デザインシステムを使ったダッシュボード制作（完全準拠バージョン）" },
+    en: { title: "Creating a Dashboard with Digital Agency Design System (Fully Compliant Version)" },
+  },
+  {
     id: "sol020",
     category: "solution",
     size: "s",
