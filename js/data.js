@@ -65,7 +65,7 @@ export const cards = [
     category: "solution",
     size: "w",
     href: "works/sol018-ws-faq-bot.html",
-    ja: { title: "【Google Workspace StudioとGemini Notebook】社内ルール問い合わせの自動化＆FAQ蓄積フロー" },
+    ja: { title: "Google Workspace StudioとGemini Notebook | 社内ルール問い合わせの自動化＆FAQ蓄積フロー" },
     en: { title: "Automating Internal FAQ & Knowledge Accumulation with Google Workspace Studio and Gemini Notebook" },
   },
   {
