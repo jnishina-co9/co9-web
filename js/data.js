@@ -29,6 +29,14 @@
 
 export const cards = [
   {
+    id: "sol022",
+    category: "solution",
+    size: "s",
+    href: "works/sol022-dads-local-designsystem.html",
+    ja: { title: "デジタル庁デザインルールからローカルデザインシステムと動くWebレポート制作（オリジナルver.）" },
+    en: { title: "Creating a Local Design System and Dynamic Web Report from Digital Agency Rules (Original Ver.)" },
+  },
+  {
     id: "sol021",
     category: "solution",
     size: "s",
