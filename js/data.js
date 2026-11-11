@@ -37,6 +37,29 @@ export const cards = [
     en: { title: "Creating a Local Design System and Dynamic Web Report from Digital Agency Rules (Original Ver.)" },
   },
   {
+    id: "col009",
+    category: "column",
+    size: "s",
+    href: "https://note.com/co9_note/n/nac16e64faddb",
+    popup: {
+      intro: [
+        "GoogleのGemに代わる新機能「スキル」の作成手順や実用性を検証したレポートです。",
+        "チャットの会話からスキル化する手順や、YouTube動画からのレシピ抽出と買い物リスト作成を連続実行させた際のリアルな挙動を整理しました。",
+        "非エンジニアでも迷わず活用できるよう、Googleドライブ連携によるメンテナンスの工夫や運用の注意点まで具体的にまとめています。",
+      ],
+      links: [
+        {
+          sub: "NOTE",
+          label: "noteで記事を読む",
+          href: "https://note.com/co9_note/n/nac16e64faddb",
+          external: true,
+        },
+      ],
+    },
+    ja: { title: "Geminiの新機能「スキル」|「@」で呼ぶだけ！チャットから即保存する手順と複数連携の検証" },
+    en: { title: "Gemini's New 'Skills' Feature: Instant Chat Setup and Multi-Skill Workflow Verification" },
+  },
+  {
     id: "sol021",
     category: "solution",
     size: "s",
