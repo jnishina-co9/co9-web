@@ -29,6 +29,14 @@
 
 export const cards = [
   {
+    id: "sol023",
+    category: "solution",
+    size: "s",
+    href: "works/sol023-web-slide-viewer.html",
+    ja: { title: "専用アプリ不要。ブラウザで動く、Webスライド資料ビューア" },
+    en: { title: "No App Required: Browser-Based Web Slide Viewer" },
+  },
+  {
     id: "sol022",
     category: "solution",
     size: "s",
