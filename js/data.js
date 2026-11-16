@@ -29,6 +29,28 @@
 
 export const cards = [
   {
+    id: "col011",
+    category: "column",
+    size: "s",
+    href: "https://note.com/co9_note/n/n2912ffe74d08",
+    popup: {
+      intro: [
+        "Google Chromeのサイドパネル版AIでよく使うプロンプトに名前をつけて保存し、「/」や「＋」ボタンですぐに呼び出せる、スキル機能の紹介記事です。",
+        "Geminiアプリ版スキルとの比較・使い分けの違いをはじめ、チャット履歴からのワンクリック登録や呼び出し・管理手順を整理しています。また、役割別に分割した複数スキルの掛け合わせや、管理番号の付与といった実践的な活用のコツなどもまとめています。",
+      ],
+      links: [
+        {
+          sub: "NOTE",
+          label: "noteの記事を読む",
+          href: "https://note.com/co9_note/n/n2912ffe74d08",
+          external: true,
+        },
+      ],
+    },
+    ja: { title: "スキル機能 | Gemini in Chrome版" },
+    en: { title: "Skills Feature | Gemini in Chrome Edition" },
+  },
+  {
     id: "sol023",
     category: "solution",
     size: "s",
@@ -56,7 +78,7 @@ export const cards = [
         },
       ],
     },
-    ja: { title: "スキル機能 | 形骸化させないための運用・メンテナンス" },
+    ja: { title: "スキル機能 | 形骸化させないための運用・メンテナンス術" },
     en: { title: "Skills Feature | Operation & Maintenance to Prevent Stagnation" },
   },
   {
@@ -95,8 +117,8 @@ export const cards = [
         },
       ],
     },
-    ja: { title: "Geminiの新機能「スキル」|「@」で呼ぶだけ！チャットから即保存する手順と複数連携の検証" },
-    en: { title: "Gemini's New 'Skills' Feature: Instant Chat Setup and Multi-Skill Workflow Verification" },
+    ja: { title: "スキル機能 | Geminiアプリ版" },
+    en: { title: "Skills Feature | Gemini App Edition" },
   },
   {
     id: "sol020",
