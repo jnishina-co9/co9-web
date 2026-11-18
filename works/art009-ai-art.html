@@ -18,8 +18,8 @@
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <link rel="stylesheet" href="../css/work.css">
-  <script type="module" src="../js/lightbox.js"></script>
   <script type="module" src="../js/shuffle-cards.js"></script>
+  <script type="module" src="../js/art-popup.js"></script>
   <style>
     /* ============================================
        このページ固有のスタイル(共通部分はwork.cssへ)
@@ -33,7 +33,7 @@
        ホバー/タップで選ばれた札(is-active)は弧の外側へ--fan-liftぶん
        せり出し、残りの札は--fan-shiftぶん弧に沿って左右へ逃げる */
     .shuffle-cards {
-      /* サムネイル自体をこのページだけ縦長(4:5)・やや小さめにする */
+      /* サムネイル自体をこのページだけ縦長(4:5)・大きめサイズにする */
       --shuffle-thumb: 180px;
       /* 扇の半径。サムネイル幅の1.25倍と広めに取り、カード同士の重なりを
          浅くして1枚ずつがちゃんと見える扇にする */
@@ -42,6 +42,8 @@
       --fan-lift-size: calc(var(--shuffle-thumb) * 0.11);
       /* 山の開閉をややゆっくり見せる(work.cssの550msを上書き) */
       --shuffle-bounce-duration: 1000ms;
+      /* 扇の傾きで下にはみ出す分の余白を確保 */
+      padding-bottom: 110px;
     }
 
     .shuffle-thumb {
@@ -77,9 +79,10 @@
     .shuffle-card:has(+ .shuffle-card.is-active) { --fan-shift: -6deg; }
     .shuffle-card:has(+ .shuffle-card + .shuffle-card.is-active) { --fan-shift: -4deg; }
 
-    /* 角度→位置の計算と適用 */
+    /* 角度→位置の計算と適用。work.css側の「is-activeを0degに戻す」指定に
+       読み込み順で負けないよう #top を付けて詳細度を上げている */
     .shuffle-thumb,
-    .shuffle-cards .shuffle-card.is-active .shuffle-thumb {
+    #top .shuffle-cards .shuffle-card.is-active .shuffle-thumb {
       --fan-angle: calc(var(--fan-base, 0deg) + var(--fan-shift));
       rotate: var(--fan-angle);
       translate:
@@ -153,26 +156,6 @@
       margin-top: 96px;
     }
 
-    /* タイトルカード直後、リード文がない分の余白を補う */
-    .shuffle-cards {
-      margin-top: 120px;
-    }
-
-    /* 非アクティブカードの大画像・コメント欄は高さを持たないようにする。
-       opacity:0 で見えなくなっても高さは残り下に余白が出るため、
-       is-activeでないカードの要素は height:0; overflow:hidden で潰す */
-    .shuffle-card:not(.is-active) .shuffle-visual,
-    .shuffle-card:not(.is-active) .shuffle-data {
-      height: 0;
-      overflow: hidden;
-      margin-top: 0;
-    }
-
-    /* サムネイルの傾きを大きくした分、下の大きい画像との間隔を広げる */
-    .shuffle-visual {
-      margin-top: 180px;
-    }
-
     /* ---- レスポンシブ ---- */
     @media (max-width: 560px) {
       .about-grid {
@@ -185,12 +168,8 @@
       }
 
       .shuffle-cards {
-        margin-top: 80px;
+        padding-bottom: 64px;
         --shuffle-thumb: 100px;
-      }
-
-      .shuffle-visual {
-        margin-top: 120px;
       }
     }
   </style>
@@ -210,13 +189,12 @@
 
   <main>
     <article class="work-article">
-      <section class="title-card">
-        <p class="eyebrow">AI Art</p>
+      <header class="art-title">
         <h1>AI Art #09</h1>
-      </section>
+      </header>
 
-      <!-- シャッフルカード: js/shuffle-cards.jsでバージョンを切り替え -->
-      <div class="shuffle-cards" role="group" aria-label="バージョンの切り替え">
+      <!-- シャッフルカード: js/shuffle-cards.js(扇切り替え) + js/art-popup.js(ポップアップ) -->
+      <div class="shuffle-cards shuffle-cards--popup" role="group" aria-label="バージョンの切り替え">
 
         <article class="shuffle-card is-active">
           <div class="shuffle-row">

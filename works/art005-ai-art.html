@@ -105,13 +105,6 @@
       margin-top: 96px;
     }
 
-    /* タイトルカード直後、リード文がない分の余白を補う。
-       他ジャンル(リード文あり)のタイトルカード〜メインビジュアル間の
-       実測値(約204px)に合わせている */
-    .shuffle-cards {
-      margin-top: 120px;
-    }
-
     /* ---- レスポンシブ ---- */
     @media (max-width: 560px) {
       .about-grid {
@@ -121,10 +114,6 @@
       .about,
       .links {
         margin-top: 48px;
-      }
-
-      .shuffle-cards {
-        margin-top: 80px;
       }
     }
   </style>
@@ -144,10 +133,9 @@
 
   <main>
     <article class="work-article">
-      <section class="title-card">
-        <p class="eyebrow">AI Art</p>
+      <header class="art-title">
         <h1>AI Art #05</h1>
-      </section>
+      </header>
 
       <!-- シャッフルカード: バージョン1点のみのため、js/shuffle-cards.jsは
            is-active状態の維持のみに使われ、切り替え用の行(.shuffle-row)は

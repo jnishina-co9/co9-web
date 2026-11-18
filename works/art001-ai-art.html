@@ -18,8 +18,8 @@
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <link rel="stylesheet" href="../css/work.css">
-  <script type="module" src="../js/lightbox.js"></script>
   <script type="module" src="../js/shuffle-cards.js"></script>
+  <script type="module" src="../js/art-popup.js"></script>
   <style>
     /* ============================================
        このページ固有のスタイル(共通部分はwork.cssへ)
@@ -40,6 +40,8 @@
       --fan-lift-size: calc(var(--shuffle-thumb) * 0.11);
       /* 山の開閉をややゆっくり見せる(work.cssの550msを上書き) */
       --shuffle-bounce-duration: 1000ms;
+      /* 扇の傾きで下にはみ出す分の余白を確保 */
+      padding-bottom: 56px;
     }
 
     /* 各札の基本角度(中央0度・左右対称)と、動きの初期値 */
@@ -61,11 +63,10 @@
     .shuffle-card:has(+ .shuffle-card.is-active) { --fan-shift: -6deg; }
     .shuffle-card:has(+ .shuffle-card + .shuffle-card.is-active) { --fan-shift: -4deg; }
 
-    /* 角度→位置の計算と適用。2つ目のセレクタは、work.cssの
-       「is-activeの札を正面向きに戻す」指定をこのページでだけ打ち消す
-       ためのもの(山型を保ったまませり出させる) */
+    /* 角度→位置の計算と適用。work.css側の「is-activeを0degに戻す」指定に
+       読み込み順で負けないよう #top を付けて詳細度を上げている */
     .shuffle-thumb,
-    .shuffle-cards .shuffle-card.is-active .shuffle-thumb {
+    #top .shuffle-cards .shuffle-card.is-active .shuffle-thumb {
       --fan-angle: calc(var(--fan-base, 0deg) + var(--fan-shift));
       rotate: var(--fan-angle);
       translate:
@@ -140,13 +141,6 @@
       margin-top: 96px;
     }
 
-    /* タイトルカード直後、リード文がない分の余白を補う。
-       他ジャンル(リード文あり)のタイトルカード〜メインビジュアル間の
-       実測値(約204px)に合わせている */
-    .shuffle-cards {
-      margin-top: 120px;
-    }
-
     /* ---- レスポンシブ ---- */
     @media (max-width: 560px) {
       .about-grid {
@@ -159,7 +153,7 @@
       }
 
       .shuffle-cards {
-        margin-top: 80px;
+        padding-bottom: 40px;
       }
     }
   </style>
@@ -179,13 +173,12 @@
 
   <main>
     <article class="work-article">
-      <section class="title-card">
-        <p class="eyebrow">AI Art</p>
+      <header class="art-title">
         <h1>AI Art #01</h1>
-      </section>
+      </header>
 
-      <!-- シャッフルカード: js/shuffle-cards.jsでバージョンを切り替え -->
-      <div class="shuffle-cards" role="group" aria-label="バージョンの切り替え">
+      <!-- シャッフルカード: js/shuffle-cards.js(扇切り替え) + js/art-popup.js(ポップアップ) -->
+      <div class="shuffle-cards shuffle-cards--popup" role="group" aria-label="バージョンの切り替え">
 
         <article class="shuffle-card is-active">
           <div class="shuffle-row">
