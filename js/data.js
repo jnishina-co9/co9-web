@@ -82,6 +82,15 @@ export const cards = [
     en: { title: "Skills Feature | Operation & Maintenance to Prevent Stagnation" },
   },
   {
+    id: "art010",
+    category: "creation",
+    size: "s",
+    illustration: "img/works/art010/01.webp",
+    href: "works/art010-ai-art.html",
+    ja: { title: "AI Art #10" },
+    en: { title: "AI Art #10" },
+  },
+  {
     id: "sol022",
     category: "solution",
     size: "s",
