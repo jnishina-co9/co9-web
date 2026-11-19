@@ -912,6 +912,28 @@ section.slab--lead { padding-top: 40px; }
   display: none;
 }
 
+/* 枚数に応じて上方向のはみ出し相殺量(--fan-top-offset)と下余白を自動調整し、
+   どのページでも「見出し下線〜カード上端=48px」「カード下端〜次セクション=96px」に揃える */
+.shuffle-cards--popup:not(:has(> .shuffle-card:nth-of-type(4))) {
+  --fan-top-offset: calc(var(--shuffle-thumb) * 0.18);
+  padding-bottom: 80px;
+}
+
+.shuffle-cards--popup:has(> .shuffle-card:nth-of-type(4)):not(:has(> .shuffle-card:nth-of-type(5))) {
+  --fan-top-offset: calc(var(--shuffle-thumb) * 0.07);
+  padding-bottom: 80px;
+}
+
+.shuffle-cards--popup:has(> .shuffle-card:nth-of-type(5)):not(:has(> .shuffle-card:nth-of-type(6))) {
+  --fan-top-offset: 0px;
+  padding-bottom: 88px;
+}
+
+.shuffle-cards--popup:has(> .shuffle-card:nth-of-type(6)) {
+  --fan-top-offset: calc(var(--shuffle-thumb) * 0.07);
+  padding-bottom: 124px;
+}
+
 .art-popup {
   width: min(94vw, 1136px);
   max-width: min(94vw, 1136px);
@@ -1154,6 +1176,19 @@ section.slab--lead { padding-top: 40px; }
 
   .art-title + .shuffle-cards {
     margin-top: 32px;
+  }
+
+  .shuffle-cards--popup:not(:has(> .shuffle-card:nth-of-type(4))),
+  .shuffle-cards--popup:has(> .shuffle-card:nth-of-type(4)):not(:has(> .shuffle-card:nth-of-type(5))) {
+    padding-bottom: 44px;
+  }
+
+  .shuffle-cards--popup:has(> .shuffle-card:nth-of-type(5)):not(:has(> .shuffle-card:nth-of-type(6))) {
+    padding-bottom: 48px;
+  }
+
+  .shuffle-cards--popup:has(> .shuffle-card:nth-of-type(6)) {
+    padding-bottom: 68px;
   }
 
   .art-popup {

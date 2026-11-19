@@ -40,8 +40,6 @@
       --fan-lift-size: calc(var(--shuffle-thumb) * 0.11);
       /* 山の開閉をややゆっくり見せる(work.cssの550msを上書き) */
       --shuffle-bounce-duration: 1000ms;
-      /* 扇の傾きで下にはみ出す分の余白を確保 */
-      padding-bottom: 56px;
     }
 
     /* 各札の基本角度(中央0度・左右対称)と、動きの初期値 */
@@ -71,7 +69,7 @@
       rotate: var(--fan-angle);
       translate:
         calc(sin(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)))
-        calc(var(--fan-r) - cos(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)));
+        calc(var(--fan-top-offset, 0px) + var(--fan-r) - cos(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)));
     }
 
     /* ---- この作品について(簡略版ベントーグリッド) ---- */
@@ -150,10 +148,6 @@
       .about,
       .links {
         margin-top: 48px;
-      }
-
-      .shuffle-cards {
-        padding-bottom: 40px;
       }
     }
   </style>

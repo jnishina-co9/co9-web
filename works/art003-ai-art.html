@@ -18,7 +18,6 @@
   <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <link rel="stylesheet" href="../css/work.css">
-  <script type="module" src="../js/lightbox.js"></script>
   <script type="module" src="../js/shuffle-cards.js"></script>
   <script type="module" src="../js/art-popup.js"></script>
   <style>
@@ -27,28 +26,42 @@
        ============================================ */
 
     /* ---- サムネイルの山型(扇)配置とホバーアニメーション ----
-       (共通部分はwork.css。ここはこのページ固有の配置ロジック)
        トランプの手札のように、画面のずっと下にある見えない支点を中心と
-       した円弧の上に2枚を並べる。位置はCSSの三角関数(sin/cos)で計算:
+       した円弧の上に4枚を並べる。位置はCSSの三角関数(sin/cos)で計算:
        角度--fan-angleの札は、中央位置から横に「sin(角度)×半径」、
        縦に「半径 − cos(角度)×半径」だけずれる。
        ホバー/タップで選ばれた札(is-active)は弧の外側へ--fan-liftぶん
        せり出し、残りの札は--fan-shiftぶん弧に沿って左右へ逃げる */
     .shuffle-cards {
-      /* 扇の半径。サムネイル幅に連動させ、スマホ縮小時も同じ形を保つ */
-      --fan-r: calc(var(--shuffle-thumb) * 1.15);
+      /* サムネイル自体を縦長(4:5)・やや小さめにする */
+      --shuffle-thumb: 180px;
+      /* 扇の半径。サムネイル幅の1.25倍と広めに取り、カード同士の重なりを
+         浅くして1枚ずつがちゃんと見える扇にする */
+      --fan-r: calc(var(--shuffle-thumb) * 1.25);
       /* 選択札のせり出し量 */
       --fan-lift-size: calc(var(--shuffle-thumb) * 0.11);
       /* 山の開閉をややゆっくり見せる(work.cssの550msを上書き) */
       --shuffle-bounce-duration: 1000ms;
-      /* 扇の傾きで下にはみ出す分の余白を確保 */
-      padding-bottom: 32px;
     }
 
-    /* 各札の基本角度(中央0度・左右対称)と、動きの初期値 */
+    .shuffle-thumb {
+      aspect-ratio: 4 / 5;
+    }
+
+    /* 各札の基本角度(中央0度・左右対称)と、動きの初期値。
+       20deg間隔の均等配置(-30/-10/10/30deg) */
     .shuffle-card { --fan-shift: 0deg; --fan-lift: 0px; }
-    .shuffle-card:nth-of-type(1) { --fan-base: -10deg; }
-    .shuffle-card:nth-of-type(2) { --fan-base: 10deg; }
+    .shuffle-card:nth-of-type(1) { --fan-base: -30deg; }
+    .shuffle-card:nth-of-type(2) { --fan-base: -10deg; }
+    .shuffle-card:nth-of-type(3) { --fan-base: 10deg; }
+    .shuffle-card:nth-of-type(4) { --fan-base: 30deg; }
+
+    /* 重なり順: 左(バージョン1)が一番奥、右(バージョン4)が一番手前になる
+       よう、見た目の並び順=重なり順に揃える */
+    .shuffle-cards .shuffle-card:nth-of-type(1):not(.is-active) { z-index: 1; }
+    .shuffle-cards .shuffle-card:nth-of-type(2):not(.is-active) { z-index: 2; }
+    .shuffle-cards .shuffle-card:nth-of-type(3):not(.is-active) { z-index: 3; }
+    .shuffle-cards .shuffle-card:nth-of-type(4):not(.is-active) { z-index: 4; }
 
     /* 選択された札は弧の外側へせり出す */
     .shuffle-card.is-active { --fan-lift: var(--fan-lift-size); }
@@ -67,34 +80,7 @@
       rotate: var(--fan-angle);
       translate:
         calc(sin(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)))
-        calc(var(--fan-r) - cos(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)));
-    }
-
-    /* ---- シームレスの確認(このページ限定。03/04は01/02とアスペクト比が
-       異なる横長のタイル確認画像のため、シャッフルカードには含めず、
-       画像+コメント文が続けて読める簡易セクションとして掲載する) ---- */
-    .seamless-check {
-      margin-top: 64px;
-      display: flex;
-      flex-direction: column;
-      gap: 64px;
-    }
-
-    .seamless-item .g-link {
-      display: block;
-      cursor: zoom-in;
-    }
-
-    .seamless-item img {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: var(--radius);
-    }
-
-    .seamless-item p {
-      margin: 24px 0 0;
-      line-height: 1.9;
+        calc(var(--fan-top-offset, 0px) + var(--fan-r) - cos(var(--fan-angle)) * (var(--fan-r) + var(--fan-lift)));
     }
 
     /* ---- この作品について(簡略版ベントーグリッド) ---- */
@@ -176,12 +162,7 @@
       }
 
       .shuffle-cards {
-        padding-bottom: 24px;
-      }
-
-      .seamless-check {
-        margin-top: 32px;
-        gap: 32px;
+        --shuffle-thumb: 100px;
       }
     }
   </style>
@@ -215,7 +196,7 @@
             </button>
           </div>
           <div class="shuffle-visual">
-            <a href="../img/works/art003/01.webp">
+            <a class="g-link" href="../img/works/art003/01.webp">
               <img src="../img/works/art003/01.webp" alt="アイボリー地にコーラルピンクと紺色の花、オリーブ色の葉を重ねた、コントラストの強い北欧風シームレスパターン" width="1024" height="1024" loading="lazy">
             </a>
           </div>
@@ -231,7 +212,7 @@
             </button>
           </div>
           <div class="shuffle-visual">
-            <a href="../img/works/art003/02.webp">
+            <a class="g-link" href="../img/works/art003/02.webp">
               <img src="../img/works/art003/02.webp" alt="アイボリー地にチャコールとピーチベージュの花、オリーブ色の葉を配した、落ち着いた色合いの北欧風シームレスパターン" width="1024" height="1024" loading="lazy">
             </a>
           </div>
@@ -240,22 +221,39 @@
           </div>
         </article>
 
-      </div><!-- /.shuffle-cards -->
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン3を表示" aria-pressed="false">
+              <img src="../img/works/art003/03.webp" alt="バージョン1(コーラルピンク×紺色)のパターンをタイル状に並べ、継ぎ目がないか確認した見本" width="1920" height="869" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art003/03.webp">
+              <img src="../img/works/art003/03.webp" alt="バージョン1(コーラルピンク×紺色)のパターンをタイル状に並べ、継ぎ目がないか確認した見本" width="1920" height="869" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>ちゃんとシームレスになっているかも確認。</p>
+          </div>
+        </article>
 
-      <section class="seamless-check" aria-label="シームレスの確認">
-        <div class="seamless-item">
-          <a class="g-link" href="../img/works/art003/03.webp">
-            <img src="../img/works/art003/03.webp" alt="バージョン1(コーラルピンク×紺色)のパターンをタイル状に並べ、継ぎ目がないか確認した見本" width="1920" height="869" loading="lazy">
-          </a>
-          <p>ちゃんとシームレスになっているかも確認。</p>
-        </div>
-        <div class="seamless-item">
-          <a class="g-link" href="../img/works/art003/04.webp">
-            <img src="../img/works/art003/04.webp" alt="バージョン2(チャコール×ピーチベージュ)のパターンをタイル状に並べ、継ぎ目がないか確認した見本" width="1920" height="869" loading="lazy">
-          </a>
-          <p>大丈夫でした!</p>
-        </div>
-      </section>
+        <article class="shuffle-card">
+          <div class="shuffle-row">
+            <button type="button" class="shuffle-thumb" aria-label="バージョン4を表示" aria-pressed="false">
+              <img src="../img/works/art003/04.webp" alt="バージョン2(チャコール×ピーチベージュ)のパターンをタイル状に並べ、継ぎ目がないか確認した見本" width="1920" height="869" loading="lazy">
+            </button>
+          </div>
+          <div class="shuffle-visual">
+            <a class="g-link" href="../img/works/art003/04.webp">
+              <img src="../img/works/art003/04.webp" alt="バージョン2(チャコール×ピーチベージュ)のパターンをタイル状に並べ、継ぎ目がないか確認した見本" width="1920" height="869" loading="lazy">
+            </a>
+          </div>
+          <div class="shuffle-data">
+            <p>大丈夫でした!</p>
+          </div>
+        </article>
+
+      </div><!-- /.shuffle-cards -->
 
       <section class="about" aria-label="この作品について">
         <h2 class="summary-title">この作品について</h2>
