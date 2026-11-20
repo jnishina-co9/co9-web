@@ -107,6 +107,14 @@ export const cards = [
     en: { title: "Creating a Dashboard with Digital Agency Design System (Comprehensive Rule Model)" },
   },
   {
+    id: "sol024",
+    category: "solution",
+    size: "s",
+    href: "works/sol024-html-slides-bg.html",
+    ja: { title: "PDF資料を見やすく伝わるWebスライドに。背景画像対応HTMLスライド資料" },
+    en: { title: "Responsive HTML Slide Presentation: Rebuilding PDF Reports for the Web" },
+  },
+  {
     id: "col009",
     category: "column",
     size: "s",
@@ -201,17 +209,11 @@ export const cards = [
     href: "https://note.com/co9_note/n/n17fb0b664e42",
     popup: {
       intro: [
-        "これまでノーコードのStudioで運用していたポートフォリオサイトを、自作コードとGitHub Pages（無料のサイト公開機能）へ移行した作業記録をまとめました。AIツールの進化をきっかけに、「自分自身の手でコードを実装・管理したい」という思いから挑戦した実体験です。",
+        "これまでノーコードのStudioで運用していたポートフォリオサイトを、自作コードとGitHub Pages（無料のサイト公開機能）へ移行した作業記録をまとめました。AIツールの進化をきっかけに、「自分自身の手でコードを実装・管理したい」という思いから挑戦しました。",
         "「使っていた独自ドメインの移行手順」や「完全無料でお問い合わせフォームを動かす仕組み」など、非エンジニアがつまずきやすいポイントを5つのステップで整理しました。ドメイン代以外は完全無料で本番公開に至るまでの全手順を公開しています。",
         "続きはnoteの記事でご覧いただけます。",
       ],
       links: [
-        {
-          sub: "VISIT",
-          label: "ポートフォリオサイトを見る",
-          href: "https://co9co9.com/",
-          external: true,
-        },
         {
           sub: "NOTE",
           label: "noteで記事を読む",
