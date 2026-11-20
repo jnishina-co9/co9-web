@@ -82,15 +82,6 @@ export const cards = [
     en: { title: "Skills Feature | Operation & Maintenance to Prevent Stagnation" },
   },
   {
-    id: "art010",
-    category: "creation",
-    size: "s",
-    illustration: "img/works/art010/01.webp",
-    href: "works/art010-ai-art.html",
-    ja: { title: "AI Art #10" },
-    en: { title: "AI Art #10" },
-  },
-  {
     id: "sol022",
     category: "solution",
     size: "s",
@@ -105,6 +96,15 @@ export const cards = [
     href: "works/sol021-dads-dashboard.html",
     ja: { title: "デジタル庁デザインシステムを使ったダッシュボード制作（公式ルール網羅モデル）" },
     en: { title: "Creating a Dashboard with Digital Agency Design System (Comprehensive Rule Model)" },
+  },
+  {
+    id: "art010",
+    category: "creation",
+    size: "s",
+    illustration: "img/works/art010/01.webp",
+    href: "works/art010-ai-art.html",
+    ja: { title: "AI Art #10" },
+    en: { title: "AI Art #10" },
   },
   {
     id: "sol024",
