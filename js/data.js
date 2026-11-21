@@ -111,7 +111,7 @@ export const cards = [
     category: "solution",
     size: "s",
     href: "works/sol024-html-slides-bg.html",
-    ja: { title: "PDF資料を見やすく伝わるWebスライドに。背景画像対応HTMLスライド資料" },
+    ja: { title: "PDFを見やすく伝わるWebスライドに。背景画像対応HTMLスライド資料" },
     en: { title: "Responsive HTML Slide Presentation: Rebuilding PDF Reports for the Web" },
   },
   {
